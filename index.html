@@ -4,134 +4,133 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rick Mathews</title>
-  <meta name="description" content="Rick Mathews. Biomedical engineer and physician-scientist in training at the Oregon Health & Science University.">
+  <meta name="description" content="Rick Mathews. Community-oriented, problem-focused biomedical engineer and physician-scientist in training at Oregon Health & Science University.">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
       --mta-red:#EE352E; --mta-blue:#0039A6; --mta-green:#00933C; --mta-orange:#FF6319;
       --mta-yellow:#FCCC0A; --mta-purple:#B933AD; --mta-gray:#A7A9AC; --mta-dark-gray:#63666A;
       --black:#111; --white:#FFF; --bg:#EDEEF0;
     }
-    body{
-      background:var(--bg); font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:var(--black);
-      line-height:1.35; -webkit-font-smoothing:antialiased; padding:14px;
+    
+    /* Lock the body to the viewport size. Thin padding acts as the border margin. */
+    body {
+      background: var(--bg); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+      color: var(--black); line-height: 1.35; -webkit-font-smoothing: antialiased;
+      height: 100vh; height: 100svh; width: 100vw; overflow: hidden;
+      display: flex; flex-direction: column; padding: 10px;
     }
 
-    .station-grid{
-      position:relative; max-width:1180px; margin:0 auto;
-      display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;
+    /* GRID: 3 columns, 3 rows. The bottom row gets the most space for the longest lists. */
+    .station-grid {
+      flex: 1; min-height: 0; width: 100%; max-width: 1440px; margin: 0 auto;
+      display: grid; gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto minmax(0, 1fr) minmax(0, 1.4fr);
       grid-template-areas:
-        "identity   identity   focus"
-        "side       education  pubs"
-        "experience community  pubs"
-        "funding    honors     pubs";
+        "identity   focus       side"
+        "education  experience  community"
+        "funding    honors      pubs";
     }
-    @media (max-width:820px){
-      .station-grid{grid-template-columns:1fr; grid-template-areas:none;}
-      .station{grid-area:auto !important;}
-      #routes{display:none;}   /* lines only make sense in the 2D map layout */
-    }
-
-    /* route line layer sits behind the opaque station cards, showing through the gutters */
-    #routes{position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;}
 
     .station.identity{grid-area:identity;} .station.focus{grid-area:focus;}
     .station.side{grid-area:side;} .station.education{grid-area:education;}
     .station.experience{grid-area:experience;} .station.community{grid-area:community;}
     .station.funding{grid-area:funding;} .station.honors{grid-area:honors;} .station.pubs{grid-area:pubs;}
 
-    .station{
-      position:relative; z-index:1; background:var(--white);
-      border-left:6px solid var(--mta-gray); border-right:2px solid var(--black);
-      border-top:2px solid var(--black); border-bottom:2px solid var(--black);
-      box-shadow:3px 3px 0 rgba(0,0,0,0.08);
-      display:flex; flex-direction:column;
+    /* Cards are flex containers. They hide outer overflow so internal content can scroll. */
+    .station {
+      background: var(--white); min-height: 0; display: flex; flex-direction: column;
+      border-left: 6px solid var(--mta-gray); border-right: 2px solid var(--black);
+      border-top: 2px solid var(--black); border-bottom: 2px solid var(--black);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.06); overflow: hidden;
     }
+    
     .station.line-red{border-left-color:var(--mta-red);} .station.line-blue{border-left-color:var(--mta-blue);}
     .station.line-green{border-left-color:var(--mta-green);} .station.line-orange{border-left-color:var(--mta-orange);}
     .station.line-purple{border-left-color:var(--mta-purple);} .station.line-dark{border-left-color:var(--mta-dark-gray);}
 
-    /* Sticky Headers keep the context pinned as you scroll tall cards */
-    .station-header{
-      background:var(--black); padding:7px 11px; display:flex; align-items:center; gap:9px;
-      position:sticky; top:14px; z-index:2;
-      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.3);
+    /* Header is locked at the top of the flex block */
+    .station-header {
+      background: var(--black); padding: 7px 10px; display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0; border-bottom: 1px solid var(--black);
     }
-    .bullet{
-      width:24px;height:24px;border-radius:50%;background:var(--mta-gray);display:flex;align-items:center;justify-content:center;
-      font-weight:800;font-size:0.8rem;color:white;border:2px solid var(--black);box-shadow:0 0 0 2px var(--white);flex-shrink:0;
+    .bullet {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--mta-gray);
+      display: flex; align-items: center; justify-content: center; font-weight: 800;
+      font-size: 0.75rem; color: white; border: 2px solid var(--black);
+      box-shadow: 0 0 0 2px var(--white); flex-shrink: 0;
     }
     .bullet.red{background:var(--mta-red);} .bullet.blue{background:var(--mta-blue);}
     .bullet.green{background:var(--mta-green);} .bullet.orange{background:var(--mta-orange);}
     .bullet.purple{background:var(--mta-purple);} .bullet.gray{background:var(--mta-gray);}
-    .station-title{font-weight:800;letter-spacing:-0.02em;text-transform:uppercase;color:white;font-size:0.9rem;}
-    .station-content{padding:9px 11px;}
-    .station-content,.data-row,.build-item{font-size:0.85rem;}
-    .identity .station-content{font-size:0.9rem;}
+    .station-title { font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; color: white; font-size: 0.85rem; }
 
-    a{color:var(--mta-blue);text-decoration:none;font-weight:600;border-bottom:1px solid transparent;}
-    a:hover{border-bottom-color:var(--mta-blue);}
-    h1{font-size:1.55rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:2px;}
-
-    .data-row{display:flex;flex-direction:column;margin-bottom:7px;border-bottom:1px solid #E9ECEF;padding-bottom:5px;}
-    .data-row:last-child{border-bottom:none;margin-bottom:0;}
-    .data-year{font-weight:800;color:var(--mta-dark-gray);font-size:0.68rem;}
-    .data-title{font-weight:600;font-size:0.82rem;}
-    .data-sub{font-size:0.68rem;color:#5A6268;}
-
-    .focus-line{border-left:3px solid var(--mta-red);padding-left:9px;margin:4px 0 8px 0;}
-    .highlight{border-left:3px solid var(--mta-red);background:#FFF9F0;padding:6px 9px;margin:7px 0;}
-    .highlight.blue{border-left-color:var(--mta-blue);background:#F2F5FC;}
-    .micro{font-size:0.66rem;color:#5A6268;}
-
-    .build-item{margin-bottom:9px;}
-    .build-item:last-child{margin-bottom:0;}
-    .build-tag{background:var(--black);color:white;font-size:0.6rem;font-weight:800;padding:1px 5px;display:inline-block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
-
-    .button-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-    .portal-btn{
-      background:var(--white);border:1.5px solid var(--black);padding:3px 9px;font-weight:700;font-size:0.64rem;
-      text-transform:uppercase;color:var(--black);box-shadow:1px 1px 0 var(--black);display:inline-flex;align-items:center;gap:4px;
+    /* Content area handles the internal scrolling */
+    .station-content {
+      padding: 9px 11px; flex: 1; overflow-y: auto; min-height: 0;
     }
-    .portal-btn:hover{background:var(--mta-yellow); transform:translate(-1px,-1px);}
+    .station-content, .data-row, .build-item { font-size: 0.85rem; }
+    .identity .station-content { font-size: 0.9rem; }
 
-    @media (max-width:820px){
-      .station{margin-bottom:2px;}
-      .station-content,.data-row,.build-item{font-size:1rem;}
-      .data-title{font-size:1rem;} .data-sub{font-size:0.85rem;}
-      .bullet{width:30px;height:30px;font-size:1rem;}
-      .portal-btn{font-size:0.78rem;padding:6px 13px;}
-      .station-header{top: 0;}
+    /* Custom thin scrollbar for a polished dashboard feel */
+    .station-content::-webkit-scrollbar { width: 6px; }
+    .station-content::-webkit-scrollbar-track { background: transparent; }
+    .station-content::-webkit-scrollbar-thumb { background: #CBD0D5; border-radius: 3px; }
+    .station-content::-webkit-scrollbar-thumb:hover { background: #A7A9AC; }
+
+    a { color: var(--mta-blue); text-decoration: none; font-weight: 600; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--mta-blue); }
+    h1 { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 2px; line-height: 1.1; }
+
+    .data-row { display: flex; flex-direction: column; margin-bottom: 7px; border-bottom: 1px solid #E9ECEF; padding-bottom: 5px; }
+    .data-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .data-year { font-weight: 800; color: var(--mta-dark-gray); font-size: 0.68rem; }
+    .data-title { font-weight: 600; font-size: 0.82rem; }
+    .data-sub { font-size: 0.68rem; color: #5A6268; }
+
+    .focus-line { border-left: 3px solid var(--mta-red); padding-left: 9px; margin: 4px 0 8px 0; }
+    .highlight { border-left: 3px solid var(--mta-red); background: #FFF9F0; padding: 6px 9px; margin: 7px 0; }
+    .highlight.blue { border-left-color: var(--mta-blue); background: #F2F5FC; }
+    .micro { font-size: 0.66rem; color: #5A6268; }
+
+    .build-item { margin-bottom: 9px; }
+    .build-item:last-child { margin-bottom: 0; }
+    .build-tag { background: var(--black); color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; display: inline-block; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .04em; }
+
+    .button-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .portal-btn {
+      background: var(--white); border: 1.5px solid var(--black); padding: 3px 8px; font-weight: 700; font-size: 0.64rem;
+      text-transform: uppercase; color: var(--black); box-shadow: 1px 1px 0 var(--black); display: inline-flex; align-items: center; gap: 4px;
+    }
+    .portal-btn:hover { background: var(--mta-yellow); transform: translate(-1px,-1px); }
+
+    /* Safety fallback: If screen is mobile OR very vertically short, revert to normal scrolling to prevent unreadable micro-boxes */
+    @media (max-width: 900px), (max-height: 650px) {
+      body { height: auto; overflow-y: auto; display: block; }
+      .station-grid { display: flex; flex-direction: column; }
+      .station { min-height: auto; overflow: visible; margin-bottom: 4px; }
+      .station-content { overflow-y: visible; }
+      .station-header { position: sticky; top: 0; z-index: 2; box-shadow: 0 4px 6px -4px rgba(0,0,0,0.3); }
     }
   </style>
 </head>
 <body>
 
 <div class="station-grid">
-  <!-- SVG Layer for Subway Map Line and Train Animation -->
-  <svg id="routes" preserveAspectRatio="none" aria-hidden="true">
-    <path id="route-line" fill="none" stroke="#EE352E" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"></path>
-    <!-- Train Tracker Blip -->
-    <g id="train" style="visibility:hidden;">
-      <circle cx="0" cy="0" r="7" fill="#FCCC0A" stroke="#111" stroke-width="2"/>
-      <circle cx="0" cy="0" r="3" fill="#FFF"/>
-      <!-- The train takes 24s to loop the whole line forward and backward smoothly -->
-      <animateMotion id="train-motion" dur="24s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear" />
-    </g>
-  </svg>
 
   <!-- 0 IDENTITY -->
   <div class="station line-red identity">
     <div class="station-header"><div class="bullet red">0</div><span class="station-title">Identity &amp; Portals</span></div>
     <div class="station-content">
       <h1>Rick Mathews</h1>
-      <div style="margin-bottom:3px;">Community-oriented, problem-focused biomedical engineer and physician-scientist in training.</div>
+      <div style="margin-bottom:4px;">Community-oriented, problem-focused biomedical engineer and physician-scientist in training.</div>
       <div>Doctor of Medicine and Doctor of Philosophy candidate, <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program/rick-mathews-phd">Oregon Health &amp; Science University Medical Scientist Training Program</a></div>
       <div style="font-size:0.7rem;color:#5A6268;margin-top:4px;">Portland, Oregon</div>
       <div class="button-group">
         <a href="https://www.ohsu.edu/people/rick-mathews-phd" class="portal-btn">🏥 OHSU</a>
         <a href="https://www.linkedin.com/in/mathewsrick/" class="portal-btn">🔗 LinkedIn</a>
-        <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ" class="portal-btn">📄 Google Scholar</a>
+        <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ" class="portal-btn">📄 Scholar</a>
         <a href="https://orcid.org/0000-0003-2723-5646" class="portal-btn">🔗 ORCID</a>
         <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/" class="portal-btn">📄 PubMed</a>
       </div>
@@ -149,12 +148,12 @@
       <div class="highlight">
         <strong>Funded, 2026 to 2027</strong><br>
         <a href="https://ohsufoundation.org/community-programs/friends-of-doernbecher/">Friends of Doernbecher Grant</a><br>
-        <span class="micro">Mapping coarctation anatomy. Oregon Health &amp; Science University Doernbecher Children's Hospital.</span>
+        <span class="micro">Mapping coarctation anatomy. OHSU Doernbecher Children's Hospital.</span>
       </div>
       <div class="highlight blue">
-        <strong>American Journal of Physiology &ndash; Heart and Circulatory Physiology, 2026</strong><br>
+        <strong>AJP &ndash; Heart and Circulatory Physiology, 2026</strong><br>
         <a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><br>
-        <span class="micro">Mathews R, Hinds MT, Woltjer RL, Muralidaran A. Volume 330, issue 3, pages H869 to H873.</span>
+        <span class="micro">Mathews R, et al. Volume 330, issue 3, pages H869 to H873.</span>
       </div>
     </div>
   </div>
@@ -205,7 +204,7 @@
       <div class="data-row"><div class="data-year">2016 to 2018</div><div class="data-title">Co-founder<div class="data-sub">Gol: Water Filtration Solutions for Developing Areas, New York</div></div></div>
       <div class="data-row"><div class="data-year">2016 to 2017</div><div class="data-title"><a href="https://www.nyp.org/brooklyn">Emergency Room Volunteer</a><div class="data-sub">NewYork-Presbyterian Brooklyn Methodist Hospital, Brooklyn, New York</div></div></div>
       <div class="data-row"><div class="data-year">2015 to 2017</div><div class="data-title"><a href="https://www.metmuseum.org/">Member, The College Group</a><div class="data-sub">The Metropolitan Museum of Art, New York</div></div></div>
-      <div class="data-row"><div class="data-year">2015</div><div class="data-title"><a href="https://grandsettlement.org/">Educational Testing Consultant</a><div class="data-sub">College entrance exam instruction. The Grand Street Settlement, 501(c)(3), New York</div></div></div>
+      <div class="data-row"><div class="data-year">2015</div><div class="data-title"><a href="https://grandstreet.org/">Educational Testing Consultant</a><div class="data-sub">College entrance exam instruction. The Grand Street Settlement, 501(c)(3), New York</div></div></div>
     </div>
   </div>
 
@@ -213,9 +212,9 @@
   <div class="station line-dark funding">
     <div class="station-header"><div class="bullet gray">6</div><span class="station-title">Funding</span></div>
     <div class="station-content">
-      <div class="data-row"><div class="data-year">2026 to 2027</div><div class="data-title"><a href="https://ohsufoundation.org/community-programs/friends-of-doernbecher/">Friends of Doernbecher Grant</a><div class="data-sub">Oregon Health &amp; Science University Doernbecher Children's Hospital</div></div></div>
-      <div class="data-row"><div class="data-year">2022 to 2026</div><div class="data-title"><a href="https://www.nhlbi.nih.gov/">Ruth L. Kirschstein Individual Predoctoral National Research Service Award (F30HL163918)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
-      <div class="data-row"><div class="data-year">2020 to 2022</div><div class="data-title"><a href="https://www.nhlbi.nih.gov/">Multidisciplinary Research Training in Pulmonary and Critical Care Medicine (T32HL083808)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
+      <div class="data-row"><div class="data-year">2026 to 2027</div><div class="data-title"><a href="https://ohsufoundation.org/community-programs/friends-of-doernbecher/">Friends of Doernbecher Grant</a><div class="data-sub">OHSU Doernbecher Children's Hospital</div></div></div>
+      <div class="data-row"><div class="data-year">2022 to 2026</div><div class="data-title"><a href="https://www.nhlbi.nih.gov/">Ruth L. Kirschstein NRSA (F30HL163918)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
+      <div class="data-row"><div class="data-year">2020 to 2022</div><div class="data-title"><a href="https://www.nhlbi.nih.gov/">Multidisciplinary Research Training in Pulmonary &amp; Critical Care Medicine (T32HL083808)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
       <div class="data-row"><div class="data-year">2018 to 2020</div><div class="data-title"><a href="https://www.nigms.nih.gov/">Medical Scientist Training Program (T32GM109835)</a><div class="data-sub">National Institute of General Medical Sciences</div></div></div>
       <div class="data-row"><div class="data-year">2017</div><div class="data-title">Seymour A. Seiler Undergraduate Research Fund Award<div class="data-sub"><a href="https://macaulay.cuny.edu">Macaulay Honors College</a></div></div></div>
       <div class="data-row"><div class="data-year">2015</div><div class="data-title">Grant for Undergraduate Research in Biomedical Engineering<div class="data-sub">The New York Community Trust</div></div></div>
@@ -251,53 +250,7 @@
       <div class="data-row" style="border:none;"><div class="data-year">All</div><div class="data-title">Complete list<div class="data-sub"><a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a></div></div></div>
     </div>
   </div>
+
 </div>
-
-<script>
-/* Draw the red "1" line through the station bullets, in order. It sits behind the opaque
-   cards, so it reads as a route weaving between stations (visible in the gutters). */
-(function(){
-  var grid = document.querySelector('.station-grid');
-  var svg  = document.getElementById('routes');
-  var path = document.getElementById('route-line');
-  var trainMotion = document.getElementById('train-motion');
-  var trainGrp = document.getElementById('train');
-
-  function draw(){
-    if (window.innerWidth <= 820) return;            // single column on mobile: no map lines
-    var w = grid.offsetWidth, h = grid.offsetHeight;
-    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-    var gr = grid.getBoundingClientRect();
-    var bullets = grid.querySelectorAll('.station .bullet');
-    var pts = [];
-    bullets.forEach(function(b){
-      var r = b.getBoundingClientRect();
-      pts.push({ x: r.left - gr.left + r.width/2, y: r.top - gr.top + r.height/2 });
-    });
-    if (!pts.length) return;
-    
-    // orthogonal "subway" routing: between stops, jog vertically to a midline, then across
-    var d = 'M ' + pts[0].x + ' ' + pts[0].y;
-    for (var i=1; i<pts.length; i++){
-      var a = pts[i-1], b = pts[i], midY = (a.y + b.y)/2;
-      d += ' L ' + a.x + ' ' + midY + ' L ' + b.x + ' ' + midY + ' L ' + b.x + ' ' + b.y;
-    }
-    
-    // apply line drawing
-    path.setAttribute('d', d);
-
-    // apply train animation directly to the generated path
-    if (trainMotion) {
-      trainMotion.setAttribute('path', d);
-      trainGrp.style.visibility = 'visible';
-    }
-  }
-  
-  window.addEventListener('load', draw);
-  window.addEventListener('resize', draw);
-  // fonts can shift layout after load; redraw shortly after
-  setTimeout(draw, 300); setTimeout(draw, 900);
-})();
-</script>
 </body>
 </html>
