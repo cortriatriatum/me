@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<!-- Rick Mathews. Theme: Vignelli Transit / The Missing Map. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rick Mathews | MD/PhD</title>
+<meta name="description" content="Rick Mathews. Biomedical engineer and MD/PhD candidate at OHSU. Mapping the missing developmental baseline for coarctation of the aorta.">
+<meta name="theme-color" content="#FFFFFF">
+<style>
+  :root {
+    /* Exact MTA Vignelli Map Colors */
+    --mta-red: #EE352E;    /* 1/2/3 */
+    --mta-blue: #0039A6;   /* A/C/E */
+    --mta-green: #00933C;  /* 4/5/6 */
+    --mta-orange: #FF6319; /* B/D/F/M */
+    --mta-yellow: #FCCC0A; /* N/Q/R/W */
+    --mta-purple: #B933AD; /* 7 */
+    --mta-gray: #A7A9AC;   /* L */
+    
+    /* Base */
+    --black: #111111;
+    --white: #FFFFFF;
+    --bg: #F4F5F7; /* Light cartographic paper */
+    --text: #111111;
+    --text-muted: #555555;
+    
+    /* Transit Typography */
+    --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--bg);
+    /* Subtle Plotting Grid */
+    background-image: 
+      linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding: 40px 20px;
+  }
+
+  ::selection { background: var(--mta-yellow); color: var(--black); }
+
+  a { color: var(--mta-blue); text-decoration: none; font-weight: 700; border-bottom: 2px solid transparent; transition: all 0.2s; }
+  a:hover { border-bottom-color: var(--mta-blue); }
+
+  .shell { max-width: 1180px; margin: 0 auto; }
+
+  /* Grid Layout */
+  .palace { display: grid; grid-template-columns: repeat(12, 1fr); gap: 24px; }
+  .span-12 { grid-column: span 12; }
+  .span-8 { grid-column: span 8; }
+  .span-6 { grid-column: span 6; }
+  .span-4 { grid-column: span 4; }
+  @media(max-width: 960px) { .span-8, .span-4, .span-6 { grid-column: span 12; } }
+
+  /* Map Legend Cards (Brutalist/Transit) */
+  .card {
+    background: var(--white);
+    border: 3px solid var(--black);
+    box-shadow: 6px 6px 0px var(--black);
+    display: flex;
+    flex-direction: column;
+  }
+  .card-content { padding: 24px; flex-grow: 1; }
+
+  /* Station Headers */
+  .chead {
+    background: var(--black);
+    color: var(--white);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 3px solid var(--black);
+  }
+  
+  /* MTA Bullets */
+  .bullet {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%;
+    font-weight: 800; font-size: 1.1rem; color: var(--white);
+    flex-shrink: 0; border: 2px solid var(--black); box-shadow: 0 0 0 2px var(--white);
+  }
+  .bullet.b00 { background: var(--mta-gray); }
+  .bullet.b01 { background: var(--mta-red); }
+  .bullet.b02 { background: var(--mta-blue); }
+  .bullet.b03 { background: var(--mta-green); }
+  .bullet.b04 { background: var(--mta-orange); }
+  .bullet.b05 { background: var(--mta-purple); }
+  .bullet.b06 { background: var(--mta-yellow); color: var(--black); }
+  
+  .rlbl { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; text-transform: uppercase; }
+
+  /* Identity (Room 00) */
+  .idtop { display: flex; gap: 24px; align-items: center; }
+  .shot {
+    width: 120px; height: 120px; object-fit: cover;
+    border: 3px solid var(--black); box-shadow: 4px 4px 0px var(--black);
+    filter: grayscale(100%) contrast(120%); flex-shrink: 0;
+  }
+  .idtop h1 { font-weight: 800; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.04em; margin-bottom: 8px; }
+  .idtop .who { font-size: 1.1rem; color: var(--text-muted); line-height: 1.4; font-weight: 500; }
+  .idtop .who b { color: var(--black); }
+
+  /* Current Focus (Room 01) */
+  .focus h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 24px; line-height: 1.1; }
+  .focus h2 em { font-style: normal; color: var(--mta-red); text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 4px; }
+  
+  /* The "Subway Line" List */
+  .beats { list-style: none; border-left: 8px solid var(--mta-red); margin-left: 12px; padding: 16px 0; }
+  .beats li { position: relative; padding-left: 28px; margin-bottom: 24px; font-size: 1.05rem; }
+  .beats li:last-child { margin-bottom: 0; }
+  .beats li::before {
+    content: ""; position: absolute; left: -12px; top: 2px;
+    width: 16px; height: 16px; background: var(--white);
+    border: 4px solid var(--black); border-radius: 50%; box-sizing: border-box; z-index: 2;
+  }
+
+  /* Map Advisory Highlights */
+  .highlight-box { margin-top: 24px; border: 3px solid var(--black); padding: 16px; background: var(--white); box-shadow: 3px 3px 0px var(--black); }
+  .highlight-box.grant { border-left: 8px solid var(--mta-red); }
+  .highlight-box.paper { border-left: 8px solid var(--mta-blue); margin-top: 16px; }
+  .meta-tag { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em; display: block; margin-bottom: 6px; }
+  .highlight-box .title { font-size: 1.15rem; font-weight: 700; line-height: 1.4; margin-bottom: 6px; }
+  .highlight-box .title a { color: var(--black); border-bottom: 2px solid var(--black); }
+  .highlight-box .title a:hover { color: var(--mta-blue); border-bottom-color: var(--mta-blue); }
+  .highlight-box .sub { font-size: 0.9rem; color: var(--text-muted); }
+
+  /* Data Rows (Rooms 03, 04, 05) */
+  .r { display: grid; grid-template-columns: 85px 1fr; gap: 16px; padding: 12px 0; border-bottom: 2px solid #E5E5E5; font-size: 0.95rem; }
+  .r:last-child { border-bottom: none; padding-bottom: 0; }
+  .r .y { font-weight: 800; color: var(--mta-gray); font-size: 0.9rem; letter-spacing: 0.02em; }
+  .r .x { color: var(--text); font-weight: 600; }
+  .r .x .o { display: block; color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; font-weight: 500; }
+  .r .x a { color: var(--text); border-bottom: 2px solid var(--black); }
+  .r .x a:hover { color: var(--mta-blue); border-bottom-color: var(--mta-blue); }
+
+  /* Builds (Room 02) */
+  .build { padding: 16px 0; border-bottom: 2px solid #E5E5E5; }
+  .build:last-child { border-bottom: none; padding-bottom: 0; }
+  .build .tag { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; background: var(--black); color: var(--white); padding: 4px 8px; margin-bottom: 8px; letter-spacing: 0.05em; }
+  .build-title { display: block; font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; border-bottom: none; }
+  .build-title:hover { text-decoration: underline; }
+  .build p { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; }
+
+  /* Contact / Portals (Room 06) */
+  .note { font-size: 1rem; color: var(--text-muted); max-width: 800px; margin-bottom: 24px; font-weight: 500; }
+  .links { display: flex; flex-wrap: wrap; gap: 16px; }
+  .links a {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 24px; background: var(--white); color: var(--black); border: 3px solid var(--black);
+    font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.9rem; box-shadow: 3px 3px 0px var(--black); transition: none;
+  }
+  .links a:hover { background: var(--mta-yellow); transform: translate(-2px, -2px); box-shadow: 5px 5px 0px var(--black); border-bottom-color: var(--black); }
+  .links a:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px var(--black); }
+
+  footer { max-width: 1180px; margin: 40px auto 60px; display: flex; justify-content: space-between; font-weight: 800; text-transform: uppercase; color: var(--mta-gray); letter-spacing: 0.05em; font-size: 0.8rem; }
+  @media(max-width: 768px) { .palace-inner { grid-template-columns: 1fr !important; gap: 0 !important; } }
+</style>
+</head>
+<body>
+
+<main class="shell">
+  <div class="palace">
+
+    <!-- ROOM 00: Identity -->
+    <div class="card span-12" id="who">
+      <div class="chead">
+        <div class="bullet b00">0</div>
+        <span class="rlbl">Identity</span>
+      </div>
+      <div class="card-content idtop">
+        <!-- Note: Use a high-contrast B&W square headshot to complete the MTA ticket vibe -->
+        <img class="shot" src="headshot.jpg" alt="Rick Mathews">
+        <div>
+          <h1>Rick Mathews</h1>
+          <div class="who">Biomedical Engineer <b>&times;</b> Medicine<br>MD/PhD Candidate, <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program" target="_blank">OHSU MSTP</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOM 01: Current Focus -->
+    <div class="card span-8 focus" id="focus">
+      <div class="chead">
+        <div class="bullet b01">1</div>
+        <span class="rlbl">Current Focus</span>
+      </div>
+      <div class="card-content">
+        <h2>No cause. No cure. <em>No map.</em></h2>
+        <ul class="beats">
+          <li>Coarctation of the aorta is repaired surgically every day, yet the cause is unknown.</li>
+          <li>Every theory skips one step: no one has mapped how the normal ductal-aortic junction develops across gestation.</li>
+          <li>I am building that missing baseline, so competing theories can become testable mechanism.</li>
+        </ul>
+        
+        <div class="highlight-box grant">
+          <span class="meta-tag">Funded · 2026 to 2027</span>
+          <div class="title">
+            <a href="https://www.ohsufoundation.org/doernbecher-childrens-hospital/friends-of-doernbecher/" target="_blank">"No Cause, No Cure: Mapping the Developmental Anatomy of Coarctation of the Aorta"</a>
+          </div>
+          <div class="sub">Friends of Doernbecher Grant, OHSU Doernbecher Children's Hospital</div>
+        </div>
+
+        <div class="highlight-box paper">
+          <span class="meta-tag">Am J Physiol Heart Circ Physiol · 2026</span>
+          <div class="title">
+            <a href="https://doi.org/10.1152/ajpheart.00741.2025" target="_blank">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta.</a>
+          </div>
+          <div class="sub">Mathews R, Hinds MT, Woltjer RL, Muralidaran A. 330(3):H869-H873.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOM 02: Builds -->
+    <div class="card span-4" id="builds">
+      <div class="chead">
+        <div class="bullet b02">2</div>
+        <span class="rlbl">Builds</span>
+      </div>
+      <div class="card-content">
+        <div class="build">
+          <span class="tag">Anki Add-on</span>
+          <a href="https://ankiweb.net/shared/info/897423548" target="_blank" class="build-title">microbatch.</a>
+          <p>Pulls 10 cards at a time so a five-digit backlog has a finish line. Suboptimal review beats zero review.</p>
+        </div>
+        <div class="build">
+          <span class="tag">Anki Add-on</span>
+          <a href="https://ankiweb.net/shared/info/1985468740" target="_blank" class="build-title">Passive Reviewer.</a>
+          <p>A fifth grading button that reschedules a card and moves on, for clearing the queue you have been avoiding.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOM 03: Grants -->
+    <div class="card span-6">
+      <div class="chead">
+        <div class="bullet b03">3</div>
+        <span class="rlbl">Grants &amp; Funding</span>
+      </div>
+      <div class="card-content">
+        <div class="r">
+          <span class="y">2026–27</span>
+          <span class="x">
+            <a href="https://www.ohsufoundation.org/doernbecher-childrens-hospital/friends-of-doernbecher/" target="_blank">Friends of Doernbecher Grant</a>
+            <span class="o">OHSU Doernbecher, coarctation mapping</span>
+          </span>
+        </div>
+        <div class="r">
+          <span class="y">2022–26</span>
+          <span class="x">
+            <a href="https://reporter.nih.gov/search/projects?search_text=F30HL163918" target="_blank">Kirschstein F30 NRSA (F30HL163918)</a>
+            <span class="o">NHLBI</span>
+          </span>
+        </div>
+        <div class="r">
+          <span class="y">2020–22</span>
+          <span class="x">
+            <a href="https://reporter.nih.gov/search/projects?search_text=T32HL083808" target="_blank">Pulmonary &amp; Critical Care Training (T32HL083808)</a>
+            <span class="o">NHLBI</span>
+          </span>
+        </div>
+        <div class="r">
+          <span class="y">2018–20</span>
+          <span class="x">
+            <a href="https://reporter.nih.gov/search/projects?search_text=T32GM109835" target="_blank">Medical Scientist Training Program (T32GM109835)</a>
+            <span class="o">NIGMS</span>
+          </span>
+        </div>
+        <div class="r">
+          <span class="y">2017</span>
+          <span class="x">
+            <a href="https://macaulay.cuny.edu" target="_blank">Seymour A. Seiler Undergraduate Research</a>
+            <span class="o">Macaulay Honors College</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOM 04: Education -->
+    <div class="card span-6" id="edu">
+      <div class="chead">
+        <div class="bullet b04">4</div>
+        <span class="rlbl">Education</span>
+      </div>
+      <div class="card-content">
+        <div class="r">
+          <span class="y">2018–26</span>
+          <span class="x">
+            <a href="https://www.ohsu.edu/school-of-medicine/md-program" target="_blank">M.D. Candidate</a>
+            <span class="o">Oregon Health &amp; Science University</span>
+          </span>
+        </div>
+        <div class="r">
+          <span class="y">2020–24</span>
+          <span class="x">
+            <a href="https://www.ohsu.edu/school-of-medicine/biomedical-engineering" target="_blank">Ph.D., Biomedical Engineering</a>
+            <span class="o">Oregon Health &amp; Science University</span>
+          </span>
+        </div>
+        <div class="r">
+          <span class="y">2013–17</span>
+          <span class="x">
+            <a href="https://macaulay.cuny.edu" target="_blank">B.E., Biomedical Engineering</a>
+            <span class="o">Macaulay Honors College at CCNY</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOM 05: Positions -->
+    <div class="card span-12">
+      <div class="chead">
+        <div class="bullet b05">5</div>
+        <span class="rlbl">Select Positions &amp; Honors</span>
+      </div>
+      <div class="card-content">
+        <div class="palace-inner" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+          <div>
+            <div class="r"><span class="y">2021–22</span><span class="x">Platform &amp; Portfolio Support<span class="o">Groove Capital, Minneapolis</span></span></div>
+            <div class="r"><span class="y">2018–21</span><span class="x">Director, Board of Trustees<span class="o">Phi Beta Pi, Marquam Hill Cooperative</span></span></div>
+            <div class="r"><span class="y">2016–18</span><span class="x">Co-founder<span class="o">Gol, Water Filtration for Developing Areas</span></span></div>
+          </div>
+          <div>
+            <div class="r"><span class="y">2022</span><span class="x">Looking to the Future Scholar<span class="o">Society of Thoracic Surgeons</span></span></div>
+            <div class="r"><span class="y">2022</span><span class="x">Student Travel Award<span class="o">Society for Vascular Surgery</span></span></div>
+            <div class="r"><span class="y">2021</span><span class="x">Walter de Groot Scholar<span class="o">American Vein &amp; Lymphatic Society</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOM 06: Portals -->
+    <div class="card span-12" id="contact">
+      <div class="chead">
+        <div class="bullet b06">6</div>
+        <span class="rlbl">Portals</span>
+      </div>
+      <div class="card-content">
+        <p class="note">The coarctation perspective sits in Room 1. The full list, spanning venous thrombosis, the endothelial glycocalyx, and ECMO anticoagulation, lives on the portals below.</p>
+        <div class="links">
+          <a href="https://www.linkedin.com/in/mathewsrick/" target="_blank">LinkedIn</a>
+          <a href="https://orcid.org/0000-0003-2723-5646" target="_blank">ORCID</a>
+          <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ&hl=en" target="_blank">Scholar</a>
+          <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/" target="_blank">PubMed</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <span>Rick Mathews, Portland OR</span>
+  <span>2026</span>
+</footer>
+
+</body>
+</html>
