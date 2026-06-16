@@ -1,304 +1,138 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. Subway Map – All sections visible, no page/grid scroll. Card‑internal scroll only. -->
+<!-- Rick Mathews. Subway Map. All stations fit the viewport; tall cards scroll inside their own box, never clip. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rick's Personal Website</title>
   <meta name="description" content="Rick Mathews. Biomedical engineer and MD/PhD candidate at OHSU. Mapping the missing developmental baseline for coarctation of the aorta.">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --mta-red:#EE352E; --mta-blue:#0039A6; --mta-green:#00933C; --mta-orange:#FF6319;
+      --mta-yellow:#FCCC0A; --mta-purple:#B933AD; --mta-gray:#A7A9AC; --mta-dark-gray:#63666A;
+      --black:#111; --white:#FFF; --bg:#F4F5F7;
     }
-
-    :root {
-      --mta-red: #EE352E;
-      --mta-blue: #0039A6;
-      --mta-green: #00933C;
-      --mta-orange: #FF6319;
-      --mta-yellow: #FCCC0A;
-      --mta-purple: #B933AD;
-      --mta-gray: #A7A9AC;
-      --mta-dark-gray: #63666A;
-      --black: #111;
-      --white: #FFF;
-      --bg: #F4F5F7;
+    body{
+      background:var(--bg); font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:var(--black);
+      line-height:1.35; -webkit-font-smoothing:antialiased;
+      height:100vh; height:100svh; width:100vw; overflow:hidden; position:fixed;
     }
+    .subway-system{height:100vh; height:100svh; padding:8px 12px 12px 12px; display:flex; flex-direction:column;}
 
-    body {
-      background: var(--bg);
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: var(--black);
-      line-height: 1.35;
-      -webkit-font-smoothing: antialiased;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;        /* no page scroll ever */
-      position: fixed;
-    }
-
-    .subway-system {
-      height: 100vh;
-      padding: 8px 12px 12px 12px;  /* tighter top padding */
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* grid – no overflow scroll; must fit exactly in viewport */
-    .station-grid {
-      flex: 1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;               /* reduced gap */
-      grid-auto-rows: minmax(min-content, auto);
+    /* GRID: rows are bounded to the viewport (auto + two flexible rows). The fix lives here. */
+    .station-grid{
+      flex:1; min-height:0; display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);   /* bounded rows = no overflow past the screen */
+      gap:10px;
+      /* Publications gets its own full-height right column so its 7 rows have room. */
       grid-template-areas:
         "identity identity focus"
-        "side funding education"
-        "community pubs pubs";
-      /* critical: no overflow-y: auto */
+        "side     funding   pubs"
+        "education community pubs";
+    }
+    .station.identity{grid-area:identity;}
+    .station.focus{grid-area:focus;}
+    .station.side{grid-area:side;}
+    .station.funding{grid-area:funding;}
+    .station.education{grid-area:education;}
+    .station.community{grid-area:community;}
+    .station.pubs{grid-area:pubs;}
+
+    .station{
+      background:var(--white);
+      border-left:6px solid var(--mta-gray); border-right:2px solid var(--black);
+      border-top:2px solid var(--black); border-bottom:2px solid var(--black);
+      box-shadow:3px 3px 0 rgba(0,0,0,0.06);
+      display:flex; flex-direction:column;
+      min-height:0;            /* CRITICAL: lets a grid card shrink so its content can scroll instead of clip */
+      overflow-y:auto;         /* tall cards scroll inside their own box */
+    }
+    .station.line-red{border-left-color:var(--mta-red);}
+    .station.line-blue{border-left-color:var(--mta-blue);}
+    .station.line-green{border-left-color:var(--mta-green);}
+    .station.line-orange{border-left-color:var(--mta-orange);}
+    .station.line-purple{border-left-color:var(--mta-purple);}
+    .station.line-dark{border-left-color:var(--mta-dark-gray);}
+
+    .station-header{
+      background:var(--black); padding:6px 10px; display:flex; align-items:center; gap:8px;
+      flex-shrink:0; position:sticky; top:0; z-index:2;
+    }
+    .bullet{
+      width:24px; height:24px; border-radius:50%; background:var(--mta-gray);
+      display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem;
+      color:white; border:2px solid var(--black); box-shadow:0 0 0 2px var(--white); flex-shrink:0;
+    }
+    .bullet.red{background:var(--mta-red);} .bullet.blue{background:var(--mta-blue);}
+    .bullet.green{background:var(--mta-green);} .bullet.orange{background:var(--mta-orange);}
+    .bullet.purple{background:var(--mta-purple);} .bullet.gray{background:var(--mta-gray);}
+    .station-title{font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; color:white; font-size:0.9rem;}
+    .station-content{padding:8px 10px;}
+
+    .station-content,.data-row,.build-item,.highlight{font-size:0.85rem;}
+    .identity .station-content{font-size:0.9rem;}
+
+    a{color:var(--mta-blue); text-decoration:none; font-weight:600; border-bottom:1px solid transparent;}
+    a:hover{border-bottom-color:var(--mta-blue);}
+
+    h1{font-size:1.5rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:2px;}
+
+    .data-row{display:flex; flex-direction:column; margin-bottom:6px; border-bottom:1px solid #E9ECEF; padding-bottom:4px;}
+    .data-year{font-weight:800; color:var(--mta-dark-gray); font-size:0.7rem;}
+    .data-title{font-weight:600; font-size:0.8rem;}
+    .data-sub{font-size:0.65rem; color:#5A6268;}
+
+    .focus-line{border-left:3px solid var(--mta-red); padding-left:8px; margin:4px 0;}
+    .highlight{border-left:3px solid var(--mta-red); background:#FFF9F0; padding:5px 8px; margin:6px 0;}
+    .build-item{margin-bottom:8px;}
+    .build-tag{background:var(--black); color:white; font-size:0.6rem; font-weight:800; padding:1px 4px; display:inline-block; margin-bottom:2px;}
+
+    .button-group{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+    .portal-btn{
+      background:var(--white); border:1.5px solid var(--black); padding:3px 8px; font-weight:700;
+      font-size:0.65rem; text-transform:uppercase; color:var(--black); box-shadow:1px 1px 0 var(--black);
+      display:inline-flex; align-items:center; gap:4px;
+    }
+    .portal-btn:hover{background:var(--mta-yellow); transform:translate(-1px,-1px);}
+    .micro{font-size:0.65rem;}
+    .station-content :last-child{margin-bottom:0;}
+
+    /* Very short screens: let the whole page scroll as a safety net (still nothing clips). */
+    @media (max-height:640px){
+      body{position:relative; height:auto; overflow-y:auto;}
+      .subway-system{height:auto; min-height:100vh;}
+      .station-grid{grid-template-rows:auto auto auto;}
+      .station{overflow:visible;}
     }
 
-    .station.identity { grid-area: identity; }
-    .station.focus { grid-area: focus; }
-    .station.side { grid-area: side; }
-    .station.funding { grid-area: funding; }
-    .station.education { grid-area: education; }
-    .station.community { grid-area: community; }
-    .station.pubs { grid-area: pubs; }
-
-    .station {
-      background: var(--white);
-      border-left: 6px solid var(--mta-gray);
-      border-right: 2px solid var(--black);
-      border-top: 2px solid var(--black);
-      border-bottom: 2px solid var(--black);
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.06);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;        /* internal scroll ONLY if content too tall */
-      max-height: 100%;
-    }
-
-    /* line colours */
-    .station.line-red { border-left-color: var(--mta-red); }
-    .station.line-blue { border-left-color: var(--mta-blue); }
-    .station.line-green { border-left-color: var(--mta-green); }
-    .station.line-orange { border-left-color: var(--mta-orange); }
-    .station.line-purple { border-left-color: var(--mta-purple); }
-    .station.line-yellow { border-left-color: var(--mta-yellow); }
-    .station.line-dark { border-left-color: var(--mta-dark-gray); }
-
-    /* sticky header inside each card */
-    .station-header {
-      background: var(--black);
-      padding: 6px 10px;       /* tighter header */
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-    .bullet {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--mta-gray);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 0.8rem;
-      color: white;
-      border: 2px solid var(--black);
-      box-shadow: 0 0 0 2px var(--white);
-    }
-    .bullet.red { background: var(--mta-red); }
-    .bullet.blue { background: var(--mta-blue); }
-    .bullet.green { background: var(--mta-green); }
-    .bullet.orange { background: var(--mta-orange); }
-    .bullet.purple { background: var(--mta-purple); }
-    .bullet.yellow { background: var(--mta-yellow); color: var(--black); }
-    .bullet.dark { background: var(--mta-dark-gray); }
-
-    .station-title {
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      text-transform: uppercase;
-      color: white;
-      font-size: 0.9rem;
-    }
-
-    .station-content {
-      padding: 8px 10px;       /* reduced content padding */
-    }
-
-    /* base font sizes – readable but compact enough to fit */
-    .station-content, .data-row, .build-item, .highlight {
-      font-size: 0.85rem;
-    }
-    .identity .station-content { font-size: 0.9rem; }
-    .focus .station-content { font-size: 0.85rem; }
-
-    a {
-      color: var(--mta-blue);
-      text-decoration: none;
-      font-weight: 600;
-      border-bottom: 1px solid transparent;
-    }
-    a:hover { border-bottom-color: var(--mta-blue); }
-
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 2px;
-    }
-
-    .data-row {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 6px;
-      border-bottom: 1px solid #E9ECEF;
-      padding-bottom: 4px;
-    }
-    .data-year {
-      font-weight: 800;
-      color: var(--mta-dark-gray);
-      font-size: 0.7rem;
-    }
-    .data-title {
-      font-weight: 600;
-      font-size: 0.8rem;
-    }
-    .data-sub {
-      font-size: 0.65rem;
-      color: #5A6268;
-    }
-
-    .focus-line {
-      border-left: 3px solid var(--mta-red);
-      padding-left: 8px;
-      margin: 4px 0;
-    }
-    .highlight {
-      border-left: 3px solid var(--mta-red);
-      background: #FFF9F0;
-      padding: 5px 8px;
-      margin: 6px 0;
-    }
-    .build-item {
-      margin-bottom: 8px;
-    }
-    .build-tag {
-      background: var(--black);
-      color: white;
-      font-size: 0.6rem;
-      font-weight: 800;
-      padding: 1px 4px;
-      display: inline-block;
-      margin-bottom: 2px;
-    }
-
-    .button-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-    .portal-btn {
-      background: var(--white);
-      border: 1.5px solid var(--black);
-      padding: 3px 8px;
-      font-weight: 700;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      color: var(--black);
-      box-shadow: 1px 1px 0 var(--black);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .portal-btn:hover {
-      background: var(--mta-yellow);
-      transform: translate(-1px, -1px);
-    }
-    .micro { font-size: 0.65rem; }
-
-    /* remove extra bottom margin */
-    .station-content :last-child {
-      margin-bottom: 0;
-    }
-
-    /* Small screens / laptops: if content still overflows, allow grid scroll as fallback */
-    @media (max-height: 750px) {
-      .station-grid {
-        overflow-y: auto;      /* only on very short screens, but body still fixed */
-        padding-right: 4px;
-      }
-      .station {
-        overflow-y: visible;   /* prefer grid scroll over card scroll when very cramped */
-      }
-    }
-
-    /* mobile: stack and enable page scroll */
-    @media (max-width: 800px) {
-      body {
-        position: relative;
-        height: auto;
-        overflow-y: auto;
-      }
-      .subway-system {
-        height: auto;
-        padding: 10px;
-      }
-      .station-grid {
-        display: flex;
-        flex-direction: column;
-        overflow-y: visible;
-      }
-      .station {
-        max-height: none;
-        margin-bottom: 12px;
-        overflow-y: visible;
-      }
-      .station-content, .data-row, .build-item, .highlight {
-        font-size: 1rem;
-      }
-      .data-title { font-size: 1rem; }
-      .data-sub { font-size: 0.85rem; }
-      .bullet {
-        width: 32px;
-        height: 32px;
-        font-size: 1rem;
-      }
-      .station-title { font-size: 1.1rem; }
-      .portal-btn {
-        font-size: 0.8rem;
-        padding: 6px 14px;
-      }
+    /* Mobile: stack and scroll. */
+    @media (max-width:800px){
+      body{position:relative; height:auto; overflow-y:auto;}
+      .subway-system{height:auto; padding:10px;}
+      .station-grid{display:flex; flex-direction:column;}
+      .station{overflow:visible; margin-bottom:12px;}
+      .station-content,.data-row,.build-item,.highlight{font-size:1rem;}
+      .data-title{font-size:1rem;} .data-sub{font-size:0.85rem;}
+      .bullet{width:32px; height:32px; font-size:1rem;}
+      .station-title{font-size:1.1rem;}
+      .portal-btn{font-size:0.8rem; padding:6px 14px;}
     }
   </style>
 </head>
 <body>
 <div class="subway-system">
   <div class="station-grid">
-    <!-- 0: IDENTITY & PORTALS (user edited) -->
+
+    <!-- 0: IDENTITY & PORTALS -->
     <div class="station line-dark identity">
-      <div class="station-header">
-        <div class="bullet dark">0</div>
-        <span class="station-title">Identity & Portals</span>
-      </div>
+      <div class="station-header"><div class="bullet gray">0</div><span class="station-title">Identity &amp; Portals</span></div>
       <div class="station-content">
         <h1>Rick Mathews</h1>
-        <div style="margin-bottom: 2px;">Biomedical Engineer × Physician-Scientist in Training</div>
-        <div style="font-style: italic; margin: 4px 0 4px 0;"> </div>
+        <div style="margin-bottom:2px;">Biomedical Engineer × Physician-Scientist in Training</div>
         <div>MD/PhD Candidate, <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program/rick-mathews-phd">Oregon Health &amp; Science University Medical Scientist Training Program</a></div>
-        <div style="font-size:0.7rem; color:#5A6268; margin: 4px 0 0 0;">Portland, Oregon · 2026</div>
+        <div style="font-size:0.7rem; color:#5A6268; margin:4px 0 0 0;">Portland, Oregon · 2026</div>
         <div class="button-group">
           <a href="https://www.ohsu.edu/people/rick-mathews-phd" class="portal-btn">🏥 OHSU</a>
           <a href="https://www.linkedin.com/in/mathewsrick/" class="portal-btn">🔗 LinkedIn</a>
@@ -318,14 +152,14 @@
           Building the missing developmental baseline for coarctation of the aorta.
         </div>
         <div class="highlight">
-          <strong>Funded 2026–27</strong><br>
+          <strong>Funded 2026 to 2027</strong><br>
           <a href="https://www.ohsufoundation.org/doernbecher-childrens-hospital/friends-of-doernbecher/">Friends of Doernbecher Grant</a><br>
           <span class="micro">Mapping coarctation anatomy, OHSU Doernbecher Children's Hospital</span>
         </div>
         <div class="highlight" style="border-left-color:var(--mta-blue);">
-          <strong>American Journal of Physiology Heart and Circulatory Physiology · 2026</strong><br>
-          <a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal‑aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><br>
-          <span class="micro">Mathews R, Hinds MT, Woltjer RL, Muralidaran A. 330(3):H869‑H873.</span>
+          <strong>Am J Physiol Heart Circ Physiol · 2026</strong><br>
+          <a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><br>
+          <span class="micro">Mathews R, Hinds MT, Woltjer RL, Muralidaran A. 330(3):H869-H873.</span>
         </div>
       </div>
     </div>
@@ -335,14 +169,14 @@
       <div class="station-header"><div class="bullet blue">2</div><span class="station-title">Side Projects</span></div>
       <div class="station-content">
         <div class="build-item">
-          <div class="build-tag">Anki Add‑on</div>
+          <div class="build-tag">Anki Add-on</div>
           <strong><a href="https://ankiweb.net/shared/info/897423548">microbatch.</a></strong><br>
-          <span>10 cards at a time → finish line.</span>
+          <span>10 cards at a time, so the backlog has a finish line.</span>
         </div>
         <div class="build-item">
-          <div class="build-tag">Anki Add‑on</div>
+          <div class="build-tag">Anki Add-on</div>
           <strong><a href="https://ankiweb.net/shared/info/1985468740">Passive Reviewer.</a></strong><br>
-          <span>Fifth button, reschedule and move on.</span>
+          <span>A fifth button: reschedule and move on.</span>
         </div>
       </div>
     </div>
@@ -352,9 +186,9 @@
       <div class="station-header"><div class="bullet green">3</div><span class="station-title">Funding</span></div>
       <div class="station-content">
         <div class="data-row"><div class="data-year">2026–27</div><div class="data-title"><a href="https://www.ohsufoundation.org/doernbecher-childrens-hospital/friends-of-doernbecher/">Friends of Doernbecher Grant</a><div class="data-sub">OHSU Doernbecher Children's Hospital</div></div></div>
-        <div class="data-row"><div class="data-year">2022–26</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=F30HL163918">Ruth L. Kirschstein National Research Service Award (F30HL163918)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
-        <div class="data-row"><div class="data-year">2020–22</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=T32HL083808">Multidisciplinary Research Training in Pulmonary and Critical Care Medicine</a><div class="data-sub">National Heart, Lung, and Blood Institute (T32HL083808)</div></div></div>
-        <div class="data-row"><div class="data-year">2018–20</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=T32GM109835">Medical Scientist Training Program</a><div class="data-sub">National Institute of General Medical Sciences (T32GM109835)</div></div></div>
+        <div class="data-row"><div class="data-year">2022–26</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=F30HL163918">Ruth L. Kirschstein NRSA (F30HL163918)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
+        <div class="data-row"><div class="data-year">2020–22</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=T32HL083808">Pulmonary &amp; Critical Care Research Training (T32HL083808)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
+        <div class="data-row"><div class="data-year">2018–20</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=T32GM109835">Medical Scientist Training Program (T32GM109835)</a><div class="data-sub">National Institute of General Medical Sciences</div></div></div>
       </div>
     </div>
 
@@ -363,39 +197,40 @@
       <div class="station-header"><div class="bullet orange">4</div><span class="station-title">Education</span></div>
       <div class="station-content">
         <div class="data-row"><div class="data-year">2018–26</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/md-program">Doctor of Medicine Candidate</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
-        <div class="data-row"><div class="data-year">2020–24</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/biomedical-engineering">Doctor of Philosophy in Biomedical Engineering</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
-        <div class="data-row"><div class="data-year">2013–17</div><div class="data-title"><a href="https://macaulay.cuny.edu">Bachelor of Engineering in Biomedical Engineering</a><div class="data-sub">Macaulay Honors College at the City University of New York: The City College of New York</div></div></div>
+        <div class="data-row"><div class="data-year">2020–24</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/biomedical-engineering">PhD, Biomedical Engineering</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
+        <div class="data-row"><div class="data-year">2013–17</div><div class="data-title"><a href="https://macaulay.cuny.edu">BE, Biomedical Engineering</a><div class="data-sub">Macaulay Honors College at CCNY, Grove School of Engineering</div></div></div>
       </div>
     </div>
 
     <!-- 5: COMMUNITY & ROLES -->
     <div class="station line-purple community">
-      <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community & Roles</span></div>
+      <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community &amp; Roles</span></div>
       <div class="station-content">
         <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://www.sts.org/">Looking to the Future Scholar</a><div class="data-sub">Society of Thoracic Surgeons</div></div></div>
         <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://vascular.org/">Student Travel Award</a><div class="data-sub">Society for Vascular Surgery</div></div></div>
         <div class="data-row"><div class="data-year">2021</div><div class="data-title">Walter de Groot Scholar<div class="data-sub">American Vein and Lymphatic Society</div></div></div>
-        <div class="data-row"><div class="data-year">2021–22</div><div class="data-title"><a href="https://www.groovecap.com/">Platform and Portfolio Company Support</a><div class="data-sub">Groove Capital, Minneapolis, Minnesota (venture firm)</div></div></div>
-        <div class="data-row"><div class="data-year">2018–21</div><div class="data-title"><a href="https://www.marquamhillcoop.org/">Director, Board of Trustees</a><div class="data-sub">Phi Beta Pi: Marquam Hill Cooperative (501(c)3), Portland, Oregon</div></div></div>
+        <div class="data-row"><div class="data-year">2021–22</div><div class="data-title"><a href="https://www.groovecap.com/">Platform &amp; Portfolio Company Support</a><div class="data-sub">Groove Capital, Minneapolis (venture firm)</div></div></div>
+        <div class="data-row"><div class="data-year">2018–21</div><div class="data-title">Director, Board of Trustees<div class="data-sub">Phi Beta Pi: Marquam Hill Cooperative, 501(c)(3), Portland</div></div></div>
       </div>
     </div>
 
-    <!-- 6: PUBLICATIONS -->
+    <!-- 6: PUBLICATIONS (full-height right column) -->
     <div class="station line-dark pubs">
-      <div class="station-header"><div class="bullet" style="background:#A7A9AC;">6</div><span class="station-title">Publications</span></div>
+      <div class="station-header"><div class="bullet gray">6</div><span class="station-title">Publications</span></div>
       <div class="station-content">
-        <div class="data-row"><div class="data-year">2026</div><div class="data-title"><a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal‑aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><div class="data-sub">American Journal of Physiology Heart and Circulatory Physiology</div></div></div>
-        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38099327/">Role of platelet count in a murine stasis model of deep vein thrombosis</a><div class="data-sub">Platelets. 2024;35(1):2290916</div></div></div>
-        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38359323/">Venous thromboembolism: diagnostic advances and unaddressed challenges in management</a><div class="data-sub">Current Opinion in Hematology. 2024;31(3):122-129</div></div></div>
-        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/39393311/">AMP dependent protein kinase regulates endothelial heparan sulfate expression in response to an inflammatory stimulus under arterial shear stress</a><div class="data-sub">Biochemical and Biophysical Research Communications. 2024;735:150743</div></div></div>
-        <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/34059731/">Heparan sulfate proteoglycan glypican‑1 and PECAM‑1 cooperate in shear‑induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports. 2021;11(1):11386</div></div></div>
-        <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/32647868/">The glycocalyx core protein Glypican 1 protects vessel wall endothelial cells from stiffness‑mediated dysfunction and disease</a><div class="data-sub">Cardiovascular Research. 2021;117(6):1592-1605</div></div></div>
-        <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/28700908/">Endothelial Glycocalyx‑Mediated Nitric Oxide Production in Response to Selective AFM Pulling</a><div class="data-sub">Biophysical Journal. 2017;113(1):101-108</div></div></div>
+        <div class="data-row"><div class="data-year">2026</div><div class="data-title"><a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><div class="data-sub">Am J Physiol Heart Circ Physiol</div></div></div>
+        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38105383/">Role of platelet count in a murine stasis model of deep vein thrombosis</a><div class="data-sub">Platelets. 35(1):2290916</div></div></div>
+        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38345009/">Venous thromboembolism: diagnostic advances and unaddressed challenges in management</a><div class="data-sub">Curr Opin Hematol. 31(3):122-129</div></div></div>
+        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11601061/">AMP-dependent protein kinase regulates endothelial heparan sulfate expression under arterial shear stress</a><div class="data-sub">Biochem Biophys Res Commun. 735:150743</div></div></div>
+        <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://doi.org/10.1038/s41598-021-90941-w">Heparan sulfate proteoglycan glypican-1 and PECAM-1 cooperate in shear-induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports. 11(1):11386</div></div></div>
+        <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8152694/">The glycocalyx core protein glypican-1 protects vessel wall endothelial cells from stiffness-mediated dysfunction and disease</a><div class="data-sub">Cardiovascular Research. 117(6):1592-1605</div></div></div>
+        <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5510764/">Endothelial glycocalyx-mediated nitric oxide production in response to selective AFM pulling</a><div class="data-sub">Biophysical Journal. 113(1):101-108</div></div></div>
         <div class="highlight micro" style="margin-top:6px; padding:4px;">
           📄 Full list: <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 </body>
