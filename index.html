@@ -12,16 +12,45 @@
       --mta-yellow:#FCCC0A; --mta-purple:#B933AD; --mta-gray:#A7A9AC; --mta-dark-gray:#63666A;
       --black:#111; --white:#FFF; --bg:#EDEEF0;
     }
-    
-    /* Lock the body to the viewport size. Thin padding acts as the border margin. */
+
     body {
-      background: var(--bg); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+      background: var(--bg); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--black); line-height: 1.35; -webkit-font-smoothing: antialiased;
       height: 100vh; height: 100svh; width: 100vw; overflow: hidden;
       display: flex; flex-direction: column; padding: 10px;
+      transition: background 1.2s ease;
     }
 
-    /* GRID: 3 columns, 3 rows. The bottom row gets the most space for the longest lists. */
+    /* faint weather layer: only ever visible in the gutters behind the opaque cards */
+    #ambient { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    .service-board, .station-grid { position: relative; z-index: 1; }
+
+    /* TRANSIT SERVICE BOARD: auto-references date, weather, holidays */
+    .service-board {
+      flex-shrink: 0; width: 100%; max-width: 1440px; margin: 0 auto 10px auto;
+      background: var(--black); color: var(--white);
+      border: 2px solid var(--black); box-shadow: 3px 3px 0 rgba(0,0,0,0.12);
+      display: flex; align-items: center; gap: 12px; padding: 7px 12px; overflow: hidden;
+    }
+    .sb-live { display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      font-weight: 800; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mta-yellow); }
+    .sb-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mta-green); }
+    .sb-dot.advisory { background: var(--mta-yellow); }
+    .sb-dot.live { animation: pulse 2.6s infinite; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0,147,60,0.55); }
+      70% { box-shadow: 0 0 0 7px rgba(0,147,60,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,147,60,0); }
+    }
+    .sb-msg { flex: 1; min-width: 0; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: opacity 0.35s ease, transform 0.35s ease; }
+    .sb-msg.swap { opacity: 0; transform: translateY(-6px); }
+    .sb-msg .accent { color: var(--mta-yellow); font-weight: 800; }
+    .sb-time { flex-shrink: 0; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.05em;
+      color: var(--mta-gray); font-variant-numeric: tabular-nums; }
+    @media (max-width: 560px) { .sb-time { display: none; } .sb-live span { display: none; } }
+
     .station-grid {
       flex: 1; min-height: 0; width: 100%; max-width: 1440px; margin: 0 auto;
       display: grid; gap: 10px;
@@ -38,19 +67,19 @@
     .station.experience{grid-area:experience;} .station.community{grid-area:community;}
     .station.funding{grid-area:funding;} .station.honors{grid-area:honors;} .station.pubs{grid-area:pubs;}
 
-    /* Cards are flex containers. They hide outer overflow so internal content can scroll. */
     .station {
       background: var(--white); min-height: 0; display: flex; flex-direction: column;
       border-left: 6px solid var(--mta-gray); border-right: 2px solid var(--black);
       border-top: 2px solid var(--black); border-bottom: 2px solid var(--black);
       box-shadow: 3px 3px 0 rgba(0,0,0,0.06); overflow: hidden;
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
     }
-    
+    .station:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 rgba(0,0,0,0.10); }
+
     .station.line-red{border-left-color:var(--mta-red);} .station.line-blue{border-left-color:var(--mta-blue);}
     .station.line-green{border-left-color:var(--mta-green);} .station.line-orange{border-left-color:var(--mta-orange);}
     .station.line-purple{border-left-color:var(--mta-purple);} .station.line-dark{border-left-color:var(--mta-dark-gray);}
 
-    /* Header is locked at the top of the flex block */
     .station-header {
       background: var(--black); padding: 7px 10px; display: flex; align-items: center; gap: 8px;
       flex-shrink: 0; border-bottom: 1px solid var(--black);
@@ -66,14 +95,10 @@
     .bullet.purple{background:var(--mta-purple);} .bullet.gray{background:var(--mta-gray);}
     .station-title { font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; color: white; font-size: 0.85rem; }
 
-    /* Content area handles the internal scrolling */
-    .station-content {
-      padding: 9px 11px; flex: 1; overflow-y: auto; min-height: 0;
-    }
+    .station-content { padding: 9px 11px; flex: 1; overflow-y: auto; min-height: 0; }
     .station-content, .data-row, .build-item { font-size: 0.85rem; }
     .identity .station-content { font-size: 0.9rem; }
 
-    /* Custom thin scrollbar for a polished dashboard feel */
     .station-content::-webkit-scrollbar { width: 6px; }
     .station-content::-webkit-scrollbar-track { background: transparent; }
     .station-content::-webkit-scrollbar-thumb { background: #CBD0D5; border-radius: 3px; }
@@ -105,17 +130,35 @@
     }
     .portal-btn:hover { background: var(--mta-yellow); transform: translate(-1px,-1px); }
 
-    /* Safety fallback: If screen is mobile OR very vertically short, revert to normal scrolling to prevent unreadable micro-boxes */
     @media (max-width: 900px), (max-height: 650px) {
       body { height: auto; overflow-y: auto; display: block; }
+      .service-board { margin-bottom: 8px; align-items: flex-start; }
+      .sb-msg { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .sb-live, .sb-time { padding-top: 1px; }
       .station-grid { display: flex; flex-direction: column; }
       .station { min-height: auto; overflow: visible; margin-bottom: 4px; }
+      .station:hover { transform: none; }
       .station-content { overflow-y: visible; }
       .station-header { position: sticky; top: 0; z-index: 2; box-shadow: 0 4px 6px -4px rgba(0,0,0,0.3); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sb-dot.live { animation: none; }
+      .sb-msg { transition: none; }
+      .station { transition: none; }
     }
   </style>
 </head>
 <body>
+
+<canvas id="ambient" aria-hidden="true"></canvas>
+
+<!-- Auto-updating transit service board: date + live weather + holidays, in MTA voice -->
+<div class="service-board" role="status" aria-live="polite">
+  <span class="sb-live"><span class="sb-dot live" id="sbDot"></span><span>Service</span></span>
+  <span class="sb-msg" id="sbMsg">Checking the board&hellip;</span>
+  <span class="sb-time" id="sbTime"></span>
+</div>
 
 <div class="station-grid">
 
@@ -190,7 +233,7 @@
     <div class="station-header"><div class="bullet green">4</div><span class="station-title">Experience</span></div>
     <div class="station-content">
       <div class="data-row"><div class="data-year">2021 to 2022</div><div class="data-title"><a href="https://www.groovecap.com/">Platform and Portfolio Company Support</a><div class="data-sub">Groove Capital, Minneapolis, Minnesota</div></div></div>
-      <div class="data-row"><div class="data-year">2018</div><div class="data-title">Project Manager, Pathology Applications<div class="data-sub"><a href="https://www.epic.com/software/?searchText=beaker">Epic Systems</a>, <a href="https://share.google/rpSZzd0lSDp1aPKIM">Verona, Wisconsin</a></div></div></div>
+      <div class="data-row"><div class="data-year">2018</div><div class="data-title">Project Manager, Pathology Applications<div class="data-sub"><a href="https://www.epic.com/software/?searchText=beaker">Epic Systems</a>, Verona, Wisconsin</div></div></div>
       <div class="data-row"><div class="data-year">2014 to 2018</div><div class="data-title">Research Assistant<div class="data-sub">Wallace H. Coulter Laboratory for Cardiovascular Dynamics and Biomolecular Transport, <a href="https://www.ccny.cuny.edu/">City College of New York</a></div></div></div>
       <div class="data-row"><div class="data-year">2014 to 2015</div><div class="data-title">Head Teaching Assistant, Chemistry<div class="data-sub"><a href="https://www.ccny.cuny.edu/">City College of New York</a></div></div></div>
     </div>
@@ -252,5 +295,163 @@
   </div>
 
 </div>
+
+<script>
+/* ===========================================================================
+   AUTO-REFERENCING THEME ENGINE
+   - Live weather: Open-Meteo (no API key). Default city = Portland, Oregon.
+   - Holidays/festivals: a small date table, no network needed.
+   - The transit "service board" cycles witty status lines and refreshes itself
+     on load, every 30 minutes (weather), and at midnight (date/holiday).
+   - A faint weather layer paints behind the cards, visible only in the gutters.
+   Change CITY / LAT / LON below to localize.
+   =========================================================================== */
+(function(){
+  var CITY = 'Portland', LAT = 45.5152, LON = -122.6784;
+  var msgEl = document.getElementById('sbMsg');
+  var timeEl = document.getElementById('sbTime');
+  var dotEl  = document.getElementById('sbDot');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Holidays / observances by MM-DD -> { line, advisory }
+  var HOLIDAYS = {
+    '01-01': { line: 'Happy New Year. Fresh timetable, same destination.' },
+    '02-14': { line: "Valentine's Day. The heart is, after all, the home line." },
+    '03-14': { line: 'Pi Day. 3.14 trains arriving shortly.' },
+    '06-19': { line: 'Juneteenth. A day worth observing.' },
+    '06-20': { line: 'Summer solstice. Longest day, full timetable.' },
+    '06-21': { line: 'Summer solstice. Longest day, full timetable.' },
+    '07-04': { line: 'Independence Day. Catch the fireworks after the last express.', advisory: true },
+    '10-31': { line: 'Halloween. The express is running, allegedly.' },
+    '11-11': { line: "Veterans Day. With thanks." },
+    '12-21': { line: 'Winter solstice. Shortest day, the lab stays lit.' },
+    '12-25': { line: 'Merry Christmas. Holiday service in effect.' },
+    '12-31': { line: "New Year's Eve. Last train of the year, all aboard." }
+  };
+
+  // Evergreen, on-brand status lines (the witty/intelligent layer)
+  var EVERGREEN = [
+    'Good service on all lines.',
+    'Mind the gap. Specifically the developmental baseline gap for Coarctation of the aorta.',
+    'No delays. Only unanswered questions.',
+    'Connecting engineering and medicine.'
+  ];
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function mmdd(d){ return pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+  function clock(){
+    var d = new Date(), h = d.getHours(), m = d.getMinutes();
+    var ap = h >= 12 ? 'PM' : 'AM', hh = h % 12; if (hh === 0) hh = 12;
+    timeEl.textContent = hh + ':' + pad(m) + ' ' + ap;
+  }
+
+  // Open-Meteo weather-code -> friendly status (Fahrenheit; US convention)
+  function weatherLine(code, temp){
+    var t = Math.round(temp);
+    var c = code, adv = false, phrase;
+    if (c === 0)                         phrase = 'Clear skies over ' + CITY + ', ' + t + '°. Good service on all lines.';
+    else if (c <= 3)                     phrase = 'Overcast in ' + CITY + ', ' + t + '°. Trains on schedule.';
+    else if (c === 45 || c === 48)     { phrase = 'Fog in ' + CITY + ', ' + t + '°. Mind your step.'; adv = true; }
+    else if (c >= 51 && c <= 67)       { phrase = 'Rain in ' + CITY + ', ' + t + '°. Running on time, bring a coat.'; }
+    else if (c >= 71 && c <= 77)       { phrase = 'Snow in ' + CITY + ', ' + t + '°. Expect a slower ride.'; adv = true; }
+    else if (c >= 80 && c <= 82)       { phrase = 'Showers in ' + CITY + ', ' + t + '°. Trains undeterred.'; }
+    else if (c === 85 || c === 86)     { phrase = 'Snow showers in ' + CITY + ', ' + t + '°. Slower ride ahead.'; adv = true; }
+    else if (c >= 95)                  { phrase = 'Thunderstorms in ' + CITY + ', ' + t + '°. Trains delayed, science isn\'t.'; adv = true; }
+    else                                 phrase = CITY + ', ' + t + '°. Good service on all lines.';
+    return { line: phrase, advisory: adv, code: c };
+  }
+
+  var messages = EVERGREEN.slice();
+  var idx = 0, weatherMode = 'none';
+
+  function rebuildMessages(weather){
+    var today = HOLIDAYS[mmdd(new Date())];
+    var list = [];
+    if (weather) list.push(weather.line);
+    if (today)   list.push(today.line);
+    list = list.concat(EVERGREEN);
+    messages = list;
+    idx = 0;
+    dotEl.className = 'sb-dot live' + ((today && today.advisory) || (weather && weather.advisory) ? ' advisory' : '');
+    showMessage(messages[0]);
+  }
+
+  function showMessage(text){
+    if (reduce){ msgEl.innerHTML = text; return; }
+    msgEl.classList.add('swap');
+    setTimeout(function(){ msgEl.innerHTML = text; msgEl.classList.remove('swap'); }, 350);
+  }
+  function cycle(){ if (messages.length < 2) return; idx = (idx + 1) % messages.length; showMessage(messages[idx]); }
+
+  // ---- weather fetch (no key) ----
+  function loadWeather(){
+    var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
+              '&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto';
+    fetch(url).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+      if (!j || !j.current) { rebuildMessages(null); return; }
+      var w = weatherLine(j.current.weather_code, j.current.temperature_2m);
+      rebuildMessages(w);
+      setAmbient(w.code);
+    }).catch(function(){ rebuildMessages(null); });
+  }
+
+  // ---- faint weather layer (rain / snow / fog only; clear days stay clean) ----
+  var canvas = document.getElementById('ambient'), ctx = canvas.getContext('2d');
+  var W, H, parts = [], raf;
+  function size(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+  function setAmbient(code){
+    if (reduce) return;
+    var mode = 'none';
+    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) mode = 'rain';
+    else if ((code >= 71 && code <= 77) || code === 85 || code === 86) mode = 'snow';
+    else if (code === 45 || code === 48) mode = 'fog';
+    weatherMode = mode;
+    seed();
+  }
+  function seed(){
+    parts = [];
+    if (weatherMode === 'none'){ ctx && ctx.clearRect(0,0,W,H); return; }
+    var n = weatherMode === 'fog' ? 9 : (weatherMode === 'snow' ? 60 : 90);
+    for (var i=0;i<n;i++){
+      if (weatherMode === 'rain') parts.push({ x:Math.random()*W, y:Math.random()*H, l:8+Math.random()*12, v:5+Math.random()*5 });
+      else if (weatherMode === 'snow') parts.push({ x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*2, v:0.4+Math.random()*0.8, s:Math.random()*6 });
+      else parts.push({ x:Math.random()*W, y:Math.random()*H, r:60+Math.random()*120, v:0.2+Math.random()*0.3, a:0.03+Math.random()*0.03 });
+    }
+    if (!raf) loop();
+  }
+  function loop(){
+    raf = requestAnimationFrame(loop);
+    if (!ctx) return;
+    ctx.clearRect(0,0,W,H);
+    if (weatherMode === 'rain'){
+      ctx.strokeStyle = 'rgba(40,70,120,0.18)'; ctx.lineWidth = 1;
+      parts.forEach(function(p){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-1.5,p.y+p.l); ctx.stroke();
+        p.y += p.v; p.x -= 0.4; if (p.y > H){ p.y = -p.l; p.x = Math.random()*W; } });
+    } else if (weatherMode === 'snow'){
+      ctx.fillStyle = 'rgba(120,140,180,0.30)';
+      parts.forEach(function(p){ p.s += 0.02; ctx.beginPath(); ctx.arc(p.x + Math.sin(p.s)*4, p.y, p.r, 0, 7); ctx.fill();
+        p.y += p.v; if (p.y > H){ p.y = -4; p.x = Math.random()*W; } });
+    } else if (weatherMode === 'fog'){
+      parts.forEach(function(p){ var g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+        g.addColorStop(0,'rgba(140,140,160,'+p.a+')'); g.addColorStop(1,'rgba(140,140,160,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill();
+        p.x += p.v; if (p.x - p.r > W){ p.x = -p.r; p.y = Math.random()*H; } });
+    }
+  }
+
+  // ---- schedule ----
+  function midnightRefresh(){
+    var now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5);
+    setTimeout(function(){ loadWeather(); midnightRefresh(); }, next - now);
+  }
+
+  size(); addEventListener('resize', function(){ size(); seed(); });
+  clock(); setInterval(clock, 30000);
+  loadWeather();
+  setInterval(loadWeather, 30*60*1000);   // refresh weather every 30 min
+  if (!reduce) setInterval(cycle, 7000);   // cycle status lines
+  midnightRefresh();
+})();
+</script>
 </body>
 </html>
