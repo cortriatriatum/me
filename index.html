@@ -1,237 +1,287 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. Subway Map. All stations fit the viewport; tall cards scroll inside their own box, never clip. -->
+<!-- Rick Mathews. A literal subway map: the red "1" line (City College's train) routed through every station. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rick's Personal Website</title>
-  <meta name="description" content="Rick Mathews. Biomedical engineer and MD/PhD candidate at OHSU. Mapping the missing developmental baseline for coarctation of the aorta.">
+  <title>Rick Mathews</title>
+  <meta name="description" content="Rick Mathews. Community-oriented, problem-focused biomedical engineer and physician-scientist in training at Oregon Health & Science University. Mapping the developmental baseline for coarctation of the aorta.">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     :root{
       --mta-red:#EE352E; --mta-blue:#0039A6; --mta-green:#00933C; --mta-orange:#FF6319;
       --mta-yellow:#FCCC0A; --mta-purple:#B933AD; --mta-gray:#A7A9AC; --mta-dark-gray:#63666A;
-      --black:#111; --white:#FFF; --bg:#F4F5F7;
+      --black:#111; --white:#FFF; --bg:#EDEEF0;
     }
     body{
       background:var(--bg); font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:var(--black);
-      line-height:1.35; -webkit-font-smoothing:antialiased;
-      height:100vh; height:100svh; width:100vw; overflow:hidden; position:fixed;
+      line-height:1.35; -webkit-font-smoothing:antialiased; padding:14px;
     }
-    .subway-system{height:100vh; height:100svh; padding:8px 12px 12px 12px; display:flex; flex-direction:column;}
+    .legend{
+      max-width:1180px; margin:0 auto 10px auto; display:flex; align-items:center; gap:8px;
+      font-size:0.72rem; font-weight:700; color:var(--mta-dark-gray);
+    }
+    .legend .one{
+      width:20px;height:20px;border-radius:50%;background:var(--mta-red);color:#fff;font-weight:800;
+      display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;border:2px solid var(--black);
+    }
 
-    /* GRID: rows are bounded to the viewport (auto + two flexible rows). The fix lives here. */
     .station-grid{
-      flex:1; min-height:0; display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      grid-template-rows:auto minmax(0,1fr) minmax(0,1fr);   /* bounded rows = no overflow past the screen */
-      gap:10px;
-      /* Publications gets its own full-height right column so its 7 rows have room. */
+      position:relative; max-width:1180px; margin:0 auto;
+      display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;
       grid-template-areas:
-        "identity identity focus"
-        "side     funding   pubs"
-        "education community pubs";
+        "identity   identity   focus"
+        "side       education  pubs"
+        "experience community  pubs"
+        "funding    honors     pubs";
     }
-    .station.identity{grid-area:identity;}
-    .station.focus{grid-area:focus;}
-    .station.side{grid-area:side;}
-    .station.funding{grid-area:funding;}
-    .station.education{grid-area:education;}
-    .station.community{grid-area:community;}
-    .station.pubs{grid-area:pubs;}
+    @media (max-width:820px){
+      .station-grid{grid-template-columns:1fr; grid-template-areas:none;}
+      .station{grid-area:auto !important;}
+      #routes{display:none;}   /* lines only make sense in the 2D map layout */
+    }
+
+    /* route line layer sits behind the opaque station cards, showing through the gutters */
+    #routes{position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;}
+
+    .station.identity{grid-area:identity;} .station.focus{grid-area:focus;}
+    .station.side{grid-area:side;} .station.education{grid-area:education;}
+    .station.experience{grid-area:experience;} .station.community{grid-area:community;}
+    .station.funding{grid-area:funding;} .station.honors{grid-area:honors;} .station.pubs{grid-area:pubs;}
 
     .station{
-      background:var(--white);
+      position:relative; z-index:1; background:var(--white);
       border-left:6px solid var(--mta-gray); border-right:2px solid var(--black);
       border-top:2px solid var(--black); border-bottom:2px solid var(--black);
-      box-shadow:3px 3px 0 rgba(0,0,0,0.06);
+      box-shadow:3px 3px 0 rgba(0,0,0,0.08);
       display:flex; flex-direction:column;
-      min-height:0;            /* CRITICAL: lets a grid card shrink so its content can scroll instead of clip */
-      overflow-y:auto;         /* tall cards scroll inside their own box */
     }
-    .station.line-red{border-left-color:var(--mta-red);}
-    .station.line-blue{border-left-color:var(--mta-blue);}
-    .station.line-green{border-left-color:var(--mta-green);}
-    .station.line-orange{border-left-color:var(--mta-orange);}
-    .station.line-purple{border-left-color:var(--mta-purple);}
-    .station.line-dark{border-left-color:var(--mta-dark-gray);}
+    .station.line-red{border-left-color:var(--mta-red);} .station.line-blue{border-left-color:var(--mta-blue);}
+    .station.line-green{border-left-color:var(--mta-green);} .station.line-orange{border-left-color:var(--mta-orange);}
+    .station.line-purple{border-left-color:var(--mta-purple);} .station.line-dark{border-left-color:var(--mta-dark-gray);}
 
-    .station-header{
-      background:var(--black); padding:6px 10px; display:flex; align-items:center; gap:8px;
-      flex-shrink:0; position:sticky; top:0; z-index:2;
-    }
+    .station-header{background:var(--black); padding:7px 11px; display:flex; align-items:center; gap:9px;}
     .bullet{
-      width:24px; height:24px; border-radius:50%; background:var(--mta-gray);
-      display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem;
-      color:white; border:2px solid var(--black); box-shadow:0 0 0 2px var(--white); flex-shrink:0;
+      width:24px;height:24px;border-radius:50%;background:var(--mta-gray);display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:0.8rem;color:white;border:2px solid var(--black);box-shadow:0 0 0 2px var(--white);flex-shrink:0;
     }
     .bullet.red{background:var(--mta-red);} .bullet.blue{background:var(--mta-blue);}
     .bullet.green{background:var(--mta-green);} .bullet.orange{background:var(--mta-orange);}
     .bullet.purple{background:var(--mta-purple);} .bullet.gray{background:var(--mta-gray);}
-    .station-title{font-weight:800; letter-spacing:-0.02em; text-transform:uppercase; color:white; font-size:0.9rem;}
-    .station-content{padding:8px 10px;}
-
-    .station-content,.data-row,.build-item,.highlight{font-size:0.85rem;}
+    .station-title{font-weight:800;letter-spacing:-0.02em;text-transform:uppercase;color:white;font-size:0.9rem;}
+    .station-content{padding:9px 11px;}
+    .station-content,.data-row,.build-item{font-size:0.85rem;}
     .identity .station-content{font-size:0.9rem;}
 
-    a{color:var(--mta-blue); text-decoration:none; font-weight:600; border-bottom:1px solid transparent;}
+    a{color:var(--mta-blue);text-decoration:none;font-weight:600;border-bottom:1px solid transparent;}
     a:hover{border-bottom-color:var(--mta-blue);}
+    h1{font-size:1.55rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:2px;}
 
-    h1{font-size:1.5rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:2px;}
+    .data-row{display:flex;flex-direction:column;margin-bottom:7px;border-bottom:1px solid #E9ECEF;padding-bottom:5px;}
+    .data-row:last-child{border-bottom:none;margin-bottom:0;}
+    .data-year{font-weight:800;color:var(--mta-dark-gray);font-size:0.68rem;}
+    .data-title{font-weight:600;font-size:0.82rem;}
+    .data-sub{font-size:0.68rem;color:#5A6268;}
 
-    .data-row{display:flex; flex-direction:column; margin-bottom:6px; border-bottom:1px solid #E9ECEF; padding-bottom:4px;}
-    .data-year{font-weight:800; color:var(--mta-dark-gray); font-size:0.7rem;}
-    .data-title{font-weight:600; font-size:0.8rem;}
-    .data-sub{font-size:0.65rem; color:#5A6268;}
+    .focus-line{border-left:3px solid var(--mta-red);padding-left:9px;margin:4px 0 8px 0;}
+    .highlight{border-left:3px solid var(--mta-red);background:#FFF9F0;padding:6px 9px;margin:7px 0;}
+    .highlight.blue{border-left-color:var(--mta-blue);background:#F2F5FC;}
+    .micro{font-size:0.66rem;color:#5A6268;}
 
-    .focus-line{border-left:3px solid var(--mta-red); padding-left:8px; margin:4px 0;}
-    .highlight{border-left:3px solid var(--mta-red); background:#FFF9F0; padding:5px 8px; margin:6px 0;}
-    .build-item{margin-bottom:8px;}
-    .build-tag{background:var(--black); color:white; font-size:0.6rem; font-weight:800; padding:1px 4px; display:inline-block; margin-bottom:2px;}
+    .build-item{margin-bottom:9px;}
+    .build-item:last-child{margin-bottom:0;}
+    .build-tag{background:var(--black);color:white;font-size:0.6rem;font-weight:800;padding:1px 5px;display:inline-block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
 
-    .button-group{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+    .button-group{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
     .portal-btn{
-      background:var(--white); border:1.5px solid var(--black); padding:3px 8px; font-weight:700;
-      font-size:0.65rem; text-transform:uppercase; color:var(--black); box-shadow:1px 1px 0 var(--black);
-      display:inline-flex; align-items:center; gap:4px;
+      background:var(--white);border:1.5px solid var(--black);padding:3px 9px;font-weight:700;font-size:0.64rem;
+      text-transform:uppercase;color:var(--black);box-shadow:1px 1px 0 var(--black);display:inline-flex;align-items:center;gap:4px;
     }
-    .portal-btn:hover{background:var(--mta-yellow); transform:translate(-1px,-1px);}
-    .micro{font-size:0.65rem;}
-    .station-content :last-child{margin-bottom:0;}
+    .portal-btn:hover{background:var(--mta-yellow);}
 
-    /* Very short screens: let the whole page scroll as a safety net (still nothing clips). */
-    @media (max-height:640px){
-      body{position:relative; height:auto; overflow-y:auto;}
-      .subway-system{height:auto; min-height:100vh;}
-      .station-grid{grid-template-rows:auto auto auto;}
-      .station{overflow:visible;}
-    }
-
-    /* Mobile: stack and scroll. */
-    @media (max-width:800px){
-      body{position:relative; height:auto; overflow-y:auto;}
-      .subway-system{height:auto; padding:10px;}
-      .station-grid{display:flex; flex-direction:column;}
-      .station{overflow:visible; margin-bottom:12px;}
-      .station-content,.data-row,.build-item,.highlight{font-size:1rem;}
+    @media (max-width:820px){
+      .station{margin-bottom:2px;}
+      .station-content,.data-row,.build-item{font-size:1rem;}
       .data-title{font-size:1rem;} .data-sub{font-size:0.85rem;}
-      .bullet{width:32px; height:32px; font-size:1rem;}
-      .station-title{font-size:1.1rem;}
-      .portal-btn{font-size:0.8rem; padding:6px 14px;}
+      .bullet{width:30px;height:30px;font-size:1rem;}
+      .portal-btn{font-size:0.78rem;padding:6px 13px;}
     }
   </style>
 </head>
 <body>
-<div class="subway-system">
-  <div class="station-grid">
 
-    <!-- 0: IDENTITY & PORTALS -->
-    <div class="station line-dark identity">
-      <div class="station-header"><div class="bullet gray">0</div><span class="station-title">Identity &amp; Portals</span></div>
-      <div class="station-content">
-        <h1>Rick Mathews</h1>
-        <div style="margin-bottom:2px;">Biomedical Engineer × Physician-Scientist in Training</div>
-        <div>MD/PhD Candidate, <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program/rick-mathews-phd">Oregon Health &amp; Science University Medical Scientist Training Program</a></div>
-        <div style="font-size:0.7rem; color:#5A6268; margin:4px 0 0 0;">Portland, Oregon · 2026</div>
-        <div class="button-group">
-          <a href="https://www.ohsu.edu/people/rick-mathews-phd" class="portal-btn">🏥 OHSU</a>
-          <a href="https://www.linkedin.com/in/mathewsrick/" class="portal-btn">🔗 LinkedIn</a>
-          <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ" class="portal-btn">📄 Google Scholar</a>
-          <a href="https://orcid.org/0000-0003-2723-5646" class="portal-btn">🔗 ORCID</a>
-          <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/" class="portal-btn">📄 PubMed</a>
-        </div>
+<div class="legend"><span class="one">1</span> The line is the 1 train: City College's stop is 137th Street. One route, every station.</div>
+
+<div class="station-grid">
+  <svg id="routes" preserveAspectRatio="none" aria-hidden="true">
+    <path id="route-line" fill="none" stroke="#EE352E" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"></path>
+  </svg>
+
+  <!-- 0 IDENTITY -->
+  <div class="station line-red identity">
+    <div class="station-header"><div class="bullet red">0</div><span class="station-title">Identity &amp; Portals</span></div>
+    <div class="station-content">
+      <h1>Rick Mathews</h1>
+      <div style="margin-bottom:3px;">Community-oriented, problem-focused biomedical engineer and physician-scientist in training.</div>
+      <div>Doctor of Medicine and Doctor of Philosophy candidate, <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program/rick-mathews-phd">Oregon Health &amp; Science University Medical Scientist Training Program</a></div>
+      <div style="font-size:0.7rem;color:#5A6268;margin-top:4px;">Portland, Oregon</div>
+      <div class="button-group">
+        <a href="https://www.ohsu.edu/people/rick-mathews-phd" class="portal-btn">🏥 OHSU</a>
+        <a href="https://www.linkedin.com/in/mathewsrick/" class="portal-btn">🔗 LinkedIn</a>
+        <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ" class="portal-btn">📄 Google Scholar</a>
+        <a href="https://orcid.org/0000-0003-2723-5646" class="portal-btn">🔗 ORCID</a>
+        <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/" class="portal-btn">📄 PubMed</a>
       </div>
     </div>
+  </div>
 
-    <!-- 1: CURRENT FOCUS -->
-    <div class="station line-red focus">
-      <div class="station-header"><div class="bullet red">1</div><span class="station-title">Current Focus</span></div>
-      <div class="station-content">
-        <div class="focus-line">
-          <strong>No cause. No cure. <span style="color:var(--mta-red);">No map.</span></strong><br>
-          Building the missing developmental baseline for coarctation of the aorta.
-        </div>
-        <div class="highlight">
-          <strong>Funded 2026 to 2027</strong><br>
-          <a href="https://www.ohsufoundation.org/doernbecher-childrens-hospital/friends-of-doernbecher/">Friends of Doernbecher Grant</a><br>
-          <span class="micro">Mapping coarctation anatomy, OHSU Doernbecher Children's Hospital</span>
-        </div>
-        <div class="highlight" style="border-left-color:var(--mta-blue);">
-          <strong>Am J Physiol Heart Circ Physiol · 2026</strong><br>
-          <a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><br>
-          <span class="micro">Mathews R, Hinds MT, Woltjer RL, Muralidaran A. 330(3):H869-H873.</span>
-        </div>
+  <!-- 1 CURRENT FOCUS -->
+  <div class="station line-red focus">
+    <div class="station-header"><div class="bullet red">1</div><span class="station-title">Current Focus</span></div>
+    <div class="station-content">
+      <div class="focus-line">
+        <strong>No cause. No cure. <span style="color:var(--mta-red);">No map.</span></strong><br>
+        Building the missing developmental baseline for coarctation of the aorta.
+      </div>
+      <div class="highlight">
+        <strong>Funded, 2026 to 2027</strong><br>
+        <a href="https://ohsufoundation.org/community-programs/friends-of-doernbecher/">Friends of Doernbecher Grant</a><br>
+        <span class="micro">Mapping coarctation anatomy. Oregon Health &amp; Science University Doernbecher Children's Hospital.</span>
+      </div>
+      <div class="highlight blue">
+        <strong>American Journal of Physiology &ndash; Heart and Circulatory Physiology, 2026</strong><br>
+        <a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><br>
+        <span class="micro">Mathews R, Hinds MT, Woltjer RL, Muralidaran A. Volume 330, issue 3, pages H869 to H873.</span>
       </div>
     </div>
+  </div>
 
-    <!-- 2: SIDE PROJECTS -->
-    <div class="station line-blue side">
-      <div class="station-header"><div class="bullet blue">2</div><span class="station-title">Side Projects</span></div>
-      <div class="station-content">
-        <div class="build-item">
-          <div class="build-tag">Anki Add-on</div>
-          <strong><a href="https://ankiweb.net/shared/info/897423548">microbatch.</a></strong><br>
-          <span>10 cards at a time, so the backlog has a finish line.</span>
-        </div>
-        <div class="build-item">
-          <div class="build-tag">Anki Add-on</div>
-          <strong><a href="https://ankiweb.net/shared/info/1985468740">Passive Reviewer.</a></strong><br>
-          <span>A fifth button: reschedule and move on.</span>
-        </div>
+  <!-- 2 SIDE PROJECTS -->
+  <div class="station line-blue side">
+    <div class="station-header"><div class="bullet blue">2</div><span class="station-title">Side Projects</span></div>
+    <div class="station-content">
+      <div class="build-item">
+        <div class="build-tag">Anki Add-on</div>
+        <strong><a href="https://ankiweb.net/shared/info/897423548">microbatch</a></strong><br>
+        <span>Ten cards at a time, so a long backlog finally has a finish line.</span>
+      </div>
+      <div class="build-item">
+        <div class="build-tag">Anki Add-on</div>
+        <strong><a href="https://ankiweb.net/shared/info/1985468740">Passive Reviewer</a></strong><br>
+        <span>A fifth grading button: reschedule a card and move on.</span>
       </div>
     </div>
+  </div>
 
-    <!-- 3: FUNDING -->
-    <div class="station line-green funding">
-      <div class="station-header"><div class="bullet green">3</div><span class="station-title">Funding</span></div>
-      <div class="station-content">
-        <div class="data-row"><div class="data-year">2026–27</div><div class="data-title"><a href="https://www.ohsufoundation.org/doernbecher-childrens-hospital/friends-of-doernbecher/">Friends of Doernbecher Grant</a><div class="data-sub">OHSU Doernbecher Children's Hospital</div></div></div>
-        <div class="data-row"><div class="data-year">2022–26</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=F30HL163918">Ruth L. Kirschstein NRSA (F30HL163918)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
-        <div class="data-row"><div class="data-year">2020–22</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=T32HL083808">Pulmonary &amp; Critical Care Research Training (T32HL083808)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
-        <div class="data-row"><div class="data-year">2018–20</div><div class="data-title"><a href="https://reporter.nih.gov/search/projects?search_text=T32GM109835">Medical Scientist Training Program (T32GM109835)</a><div class="data-sub">National Institute of General Medical Sciences</div></div></div>
-      </div>
+  <!-- 3 EDUCATION -->
+  <div class="station line-orange education">
+    <div class="station-header"><div class="bullet orange">3</div><span class="station-title">Education</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2018 to 2026</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/md-program">Doctor of Medicine</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
+      <div class="data-row"><div class="data-year">2020 to 2024</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/biomedical-engineering">Doctor of Philosophy, Biomedical Engineering</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title"><a href="https://macaulay.cuny.edu">Bachelor of Engineering, Biomedical Engineering</a><div class="data-sub"><a href="https://www.ccny.cuny.edu/bme">City College of New York, Grove School of Engineering</a>, Macaulay Honors College</div></div></div>
     </div>
+  </div>
 
-    <!-- 4: EDUCATION -->
-    <div class="station line-orange education">
-      <div class="station-header"><div class="bullet orange">4</div><span class="station-title">Education</span></div>
-      <div class="station-content">
-        <div class="data-row"><div class="data-year">2018–26</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/md-program">Doctor of Medicine Candidate</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
-        <div class="data-row"><div class="data-year">2020–24</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/biomedical-engineering">PhD, Biomedical Engineering</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
-        <div class="data-row"><div class="data-year">2013–17</div><div class="data-title"><a href="https://macaulay.cuny.edu">BE, Biomedical Engineering</a><div class="data-sub">Macaulay Honors College at CCNY, Grove School of Engineering</div></div></div>
-      </div>
+  <!-- 4 EXPERIENCE -->
+  <div class="station line-green experience">
+    <div class="station-header"><div class="bullet green">4</div><span class="station-title">Experience</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2021 to 2022</div><div class="data-title"><a href="https://www.groovecap.com/">Platform and Portfolio Company Support</a><div class="data-sub">Groove Capital, Minneapolis, Minnesota</div></div></div>
+      <div class="data-row"><div class="data-year">2018</div><div class="data-title">Project Manager, Pathology Applications<div class="data-sub">Epic Systems, Verona, Wisconsin</div></div></div>
+      <div class="data-row"><div class="data-year">2014 to 2018</div><div class="data-title">Research Assistant<div class="data-sub"><a href="https://www.ccny.cuny.edu/bme">Wallace H. Coulter Laboratory for Cardiovascular Dynamics and Biomolecular Transport, City College of New York</a></div></div></div>
+      <div class="data-row"><div class="data-year">2014 to 2015</div><div class="data-title">Head Teaching Assistant, Chemistry<div class="data-sub">City College of New York</div></div></div>
     </div>
+  </div>
 
-    <!-- 5: COMMUNITY & ROLES -->
-    <div class="station line-purple community">
-      <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community &amp; Roles</span></div>
-      <div class="station-content">
-        <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://www.sts.org/">Looking to the Future Scholar</a><div class="data-sub">Society of Thoracic Surgeons</div></div></div>
-        <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://vascular.org/">Student Travel Award</a><div class="data-sub">Society for Vascular Surgery</div></div></div>
-        <div class="data-row"><div class="data-year">2021</div><div class="data-title">Walter de Groot Scholar<div class="data-sub">American Vein and Lymphatic Society</div></div></div>
-        <div class="data-row"><div class="data-year">2021–22</div><div class="data-title"><a href="https://www.groovecap.com/">Platform &amp; Portfolio Company Support</a><div class="data-sub">Groove Capital, Minneapolis (venture firm)</div></div></div>
-        <div class="data-row"><div class="data-year">2018–21</div><div class="data-title">Director, Board of Trustees<div class="data-sub">Phi Beta Pi: Marquam Hill Cooperative, 501(c)(3), Portland</div></div></div>
-      </div>
+  <!-- 5 COMMUNITY & SERVICE -->
+  <div class="station line-purple community">
+    <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community &amp; Service</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2018 to 2021</div><div class="data-title">Director, Board of Trustees<div class="data-sub">Phi Beta Pi: Marquam Hill Cooperative, 501(c)(3), Portland, Oregon</div></div></div>
+      <div class="data-row"><div class="data-year">2016 to 2018</div><div class="data-title">Co-founder<div class="data-sub">Gol: Water Filtration Solutions for Developing Areas, New York</div></div></div>
+      <div class="data-row"><div class="data-year">2016 to 2017</div><div class="data-title"><a href="https://www.nyp.org/brooklyn">Emergency Room Volunteer</a><div class="data-sub">NewYork-Presbyterian Brooklyn Methodist Hospital, Brooklyn, New York</div></div></div>
+      <div class="data-row"><div class="data-year">2015 to 2017</div><div class="data-title"><a href="https://www.metmuseum.org/">Member, The College Group</a><div class="data-sub">The Metropolitan Museum of Art, New York</div></div></div>
+      <div class="data-row"><div class="data-year">2015</div><div class="data-title"><a href="https://grandstreet.org/">Educational Testing Consultant</a><div class="data-sub">College entrance exam instruction. The Grand Street Settlement, 501(c)(3), New York</div></div></div>
     </div>
+  </div>
 
-    <!-- 6: PUBLICATIONS (full-height right column) -->
-    <div class="station line-dark pubs">
-      <div class="station-header"><div class="bullet gray">6</div><span class="station-title">Publications</span></div>
-      <div class="station-content">
-        <div class="data-row"><div class="data-year">2026</div><div class="data-title"><a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><div class="data-sub">Am J Physiol Heart Circ Physiol</div></div></div>
-        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38105383/">Role of platelet count in a murine stasis model of deep vein thrombosis</a><div class="data-sub">Platelets. 35(1):2290916</div></div></div>
-        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38345009/">Venous thromboembolism: diagnostic advances and unaddressed challenges in management</a><div class="data-sub">Curr Opin Hematol. 31(3):122-129</div></div></div>
-        <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11601061/">AMP-dependent protein kinase regulates endothelial heparan sulfate expression under arterial shear stress</a><div class="data-sub">Biochem Biophys Res Commun. 735:150743</div></div></div>
-        <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://doi.org/10.1038/s41598-021-90941-w">Heparan sulfate proteoglycan glypican-1 and PECAM-1 cooperate in shear-induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports. 11(1):11386</div></div></div>
-        <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8152694/">The glycocalyx core protein glypican-1 protects vessel wall endothelial cells from stiffness-mediated dysfunction and disease</a><div class="data-sub">Cardiovascular Research. 117(6):1592-1605</div></div></div>
-        <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5510764/">Endothelial glycocalyx-mediated nitric oxide production in response to selective AFM pulling</a><div class="data-sub">Biophysical Journal. 113(1):101-108</div></div></div>
-        <div class="highlight micro" style="margin-top:6px; padding:4px;">
-          📄 Full list: <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a>
-        </div>
-      </div>
+  <!-- 6 FUNDING -->
+  <div class="station line-dark funding">
+    <div class="station-header"><div class="bullet gray">6</div><span class="station-title">Funding</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2026 to 2027</div><div class="data-title"><a href="https://ohsufoundation.org/community-programs/friends-of-doernbecher/">Friends of Doernbecher Grant</a><div class="data-sub">Oregon Health &amp; Science University Doernbecher Children's Hospital</div></div></div>
+      <div class="data-row"><div class="data-year">2022 to 2026</div><div class="data-title"><a href="https://www.nhlbi.nih.gov/">Ruth L. Kirschstein Individual Predoctoral National Research Service Award (F30HL163918)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
+      <div class="data-row"><div class="data-year">2020 to 2022</div><div class="data-title"><a href="https://www.nhlbi.nih.gov/">Multidisciplinary Research Training in Pulmonary and Critical Care Medicine (T32HL083808)</a><div class="data-sub">National Heart, Lung, and Blood Institute</div></div></div>
+      <div class="data-row"><div class="data-year">2018 to 2020</div><div class="data-title"><a href="https://www.nigms.nih.gov/">Medical Scientist Training Program (T32GM109835)</a><div class="data-sub">National Institute of General Medical Sciences</div></div></div>
+      <div class="data-row"><div class="data-year">2017</div><div class="data-title">Seymour A. Seiler Undergraduate Research Fund Award<div class="data-sub"><a href="https://macaulay.cuny.edu">Macaulay Honors College</a></div></div></div>
+      <div class="data-row"><div class="data-year">2015</div><div class="data-title">Grant for Undergraduate Research in Biomedical Engineering<div class="data-sub">The New York Community Trust</div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title">Full Tuition Scholarship<div class="data-sub"><a href="https://macaulay.cuny.edu">Macaulay Honors College, City College of New York</a></div></div></div>
     </div>
+  </div>
 
+  <!-- 7 HONORS -->
+  <div class="station line-yellow honors">
+    <div class="station-header"><div class="bullet" style="background:var(--mta-yellow);color:var(--black);">7</div><span class="station-title">Honors &amp; Awards</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://pacificnwvascular.org/">Student Travel Award</a><div class="data-sub">Pacific Northwest Vascular Society</div></div></div>
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://www.sts.org/">Looking to the Future Scholar</a><div class="data-sub">Society of Thoracic Surgeons</div></div></div>
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://vascular.org/">Vascular Annual Meeting Travel Award</a><div class="data-sub">Society for Vascular Surgery</div></div></div>
+      <div class="data-row"><div class="data-year">2021</div><div class="data-title">Walter de Groot Scholar<div class="data-sub">American Vein and Lymphatic Society</div></div></div>
+      <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://www.ccny.cuny.edu/bme">Wallace H. Coulter Award for Outstanding Undergraduate Research</a><div class="data-sub">City College of New York, Biomedical Engineering</div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title">Dean's List<div class="data-sub">Macaulay Honors College</div></div></div>
+      <div class="data-row"><div class="data-year">2014 to 2017</div><div class="data-title">Member, Tau Beta Pi<div class="data-sub">National Engineering Honor Society</div></div></div>
+    </div>
+  </div>
+
+  <!-- 8 PUBLICATIONS -->
+  <div class="station line-dark pubs">
+    <div class="station-header"><div class="bullet gray">8</div><span class="station-title">Publications</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2026</div><div class="data-title"><a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><div class="data-sub">American Journal of Physiology &ndash; Heart and Circulatory Physiology</div></div></div>
+      <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38099327/">Role of platelet count in a murine stasis model of deep vein thrombosis</a><div class="data-sub">Platelets, volume 35, issue 1</div></div></div>
+      <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38359323/">Venous thromboembolism: diagnostic advances and unaddressed challenges in management</a><div class="data-sub">Current Opinion in Hematology, volume 31, issue 3</div></div></div>
+      <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/39393311/">Adenosine monophosphate dependent protein kinase regulates endothelial heparan sulfate expression in response to an inflammatory stimulus under arterial shear stress</a><div class="data-sub">Biochemical and Biophysical Research Communications, volume 735</div></div></div>
+      <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/34059731/">Heparan sulfate proteoglycan glypican-1 and platelet endothelial cell adhesion molecule 1 cooperate in shear-induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports, volume 11</div></div></div>
+      <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/32647868/">The glycocalyx core protein glypican-1 protects vessel wall endothelial cells from stiffness-mediated dysfunction and disease</a><div class="data-sub">Cardiovascular Research, volume 117, issue 6</div></div></div>
+      <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/28700908/">Endothelial glycocalyx-mediated nitric oxide production in response to selective atomic force microscopy pulling</a><div class="data-sub">Biophysical Journal, volume 113, issue 1</div></div></div>
+      <div class="data-row" style="border:none;"><div class="data-year">All</div><div class="data-title">Complete list<div class="data-sub"><a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a></div></div></div>
+    </div>
   </div>
 </div>
+
+<script>
+/* Draw the red "1" line through the station bullets, in order. It sits behind the opaque
+   cards, so it reads as a route weaving between stations (visible in the gutters). */
+(function(){
+  var grid = document.querySelector('.station-grid');
+  var svg  = document.getElementById('routes');
+  var path = document.getElementById('route-line');
+  function draw(){
+    if (window.innerWidth <= 820) return;            // single column on mobile: no map lines
+    var w = grid.offsetWidth, h = grid.offsetHeight;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    var gr = grid.getBoundingClientRect();
+    var bullets = grid.querySelectorAll('.station .bullet');
+    var pts = [];
+    bullets.forEach(function(b){
+      var r = b.getBoundingClientRect();
+      pts.push({ x: r.left - gr.left + r.width/2, y: r.top - gr.top + r.height/2 });
+    });
+    if (!pts.length) return;
+    // orthogonal "subway" routing: between stops, jog vertically to a midline, then across
+    var d = 'M ' + pts[0].x + ' ' + pts[0].y;
+    for (var i=1; i<pts.length; i++){
+      var a = pts[i-1], b = pts[i], midY = (a.y + b.y)/2;
+      d += ' L ' + a.x + ' ' + midY + ' L ' + b.x + ' ' + midY + ' L ' + b.x + ' ' + b.y;
+    }
+    path.setAttribute('d', d);
+  }
+  window.addEventListener('load', draw);
+  window.addEventListener('resize', draw);
+  // fonts can shift layout after load; redraw shortly after
+  setTimeout(draw, 300); setTimeout(draw, 900);
+})();
+</script>
 </body>
 </html>
