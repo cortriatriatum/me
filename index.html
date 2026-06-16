@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. A literal subway map: the red "1" line (City College's train) routed through every station. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -16,14 +15,6 @@
     body{
       background:var(--bg); font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:var(--black);
       line-height:1.35; -webkit-font-smoothing:antialiased; padding:14px;
-    }
-    .legend{
-      max-width:1180px; margin:0 auto 10px auto; display:flex; align-items:center; gap:8px;
-      font-size:0.72rem; font-weight:700; color:var(--mta-dark-gray);
-    }
-    .legend .one{
-      width:20px;height:20px;border-radius:50%;background:var(--mta-red);color:#fff;font-weight:800;
-      display:inline-flex;align-items:center;justify-content:center;font-size:0.72rem;border:2px solid var(--black);
     }
 
     .station-grid{
@@ -60,7 +51,12 @@
     .station.line-green{border-left-color:var(--mta-green);} .station.line-orange{border-left-color:var(--mta-orange);}
     .station.line-purple{border-left-color:var(--mta-purple);} .station.line-dark{border-left-color:var(--mta-dark-gray);}
 
-    .station-header{background:var(--black); padding:7px 11px; display:flex; align-items:center; gap:9px;}
+    /* Sticky Headers keep the context pinned as you scroll tall cards */
+    .station-header{
+      background:var(--black); padding:7px 11px; display:flex; align-items:center; gap:9px;
+      position:sticky; top:14px; z-index:2;
+      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.3);
+    }
     .bullet{
       width:24px;height:24px;border-radius:50%;background:var(--mta-gray);display:flex;align-items:center;justify-content:center;
       font-weight:800;font-size:0.8rem;color:white;border:2px solid var(--black);box-shadow:0 0 0 2px var(--white);flex-shrink:0;
@@ -97,7 +93,7 @@
       background:var(--white);border:1.5px solid var(--black);padding:3px 9px;font-weight:700;font-size:0.64rem;
       text-transform:uppercase;color:var(--black);box-shadow:1px 1px 0 var(--black);display:inline-flex;align-items:center;gap:4px;
     }
-    .portal-btn:hover{background:var(--mta-yellow);}
+    .portal-btn:hover{background:var(--mta-yellow); transform:translate(-1px,-1px);}
 
     @media (max-width:820px){
       .station{margin-bottom:2px;}
@@ -105,16 +101,23 @@
       .data-title{font-size:1rem;} .data-sub{font-size:0.85rem;}
       .bullet{width:30px;height:30px;font-size:1rem;}
       .portal-btn{font-size:0.78rem;padding:6px 13px;}
+      .station-header{top: 0;}
     }
   </style>
 </head>
 <body>
 
-<div class="legend"><span class="one">1</span> The line is the 1 train: City College's stop is 137th Street. One route, every station.</div>
-
 <div class="station-grid">
+  <!-- SVG Layer for Subway Map Line and Train Animation -->
   <svg id="routes" preserveAspectRatio="none" aria-hidden="true">
     <path id="route-line" fill="none" stroke="#EE352E" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"></path>
+    <!-- Train Tracker Blip -->
+    <g id="train" style="visibility:hidden;">
+      <circle cx="0" cy="0" r="7" fill="#FCCC0A" stroke="#111" stroke-width="2"/>
+      <circle cx="0" cy="0" r="3" fill="#FFF"/>
+      <!-- The train takes 24s to loop the whole line forward and backward smoothly -->
+      <animateMotion id="train-motion" dur="24s" repeatCount="indefinite" keyPoints="0;1;0" keyTimes="0;0.5;1" calcMode="linear" />
+    </g>
   </svg>
 
   <!-- 0 IDENTITY -->
@@ -202,7 +205,7 @@
       <div class="data-row"><div class="data-year">2016 to 2018</div><div class="data-title">Co-founder<div class="data-sub">Gol: Water Filtration Solutions for Developing Areas, New York</div></div></div>
       <div class="data-row"><div class="data-year">2016 to 2017</div><div class="data-title"><a href="https://www.nyp.org/brooklyn">Emergency Room Volunteer</a><div class="data-sub">NewYork-Presbyterian Brooklyn Methodist Hospital, Brooklyn, New York</div></div></div>
       <div class="data-row"><div class="data-year">2015 to 2017</div><div class="data-title"><a href="https://www.metmuseum.org/">Member, The College Group</a><div class="data-sub">The Metropolitan Museum of Art, New York</div></div></div>
-      <div class="data-row"><div class="data-year">2015</div><div class="data-title"><a href="https://grandstreet.org/">Educational Testing Consultant</a><div class="data-sub">College entrance exam instruction. The Grand Street Settlement, 501(c)(3), New York</div></div></div>
+      <div class="data-row"><div class="data-year">2015</div><div class="data-title"><a href="https://grandsettlement.org/">Educational Testing Consultant</a><div class="data-sub">College entrance exam instruction. The Grand Street Settlement, 501(c)(3), New York</div></div></div>
     </div>
   </div>
 
@@ -229,8 +232,8 @@
       <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://vascular.org/">Vascular Annual Meeting Travel Award</a><div class="data-sub">Society for Vascular Surgery</div></div></div>
       <div class="data-row"><div class="data-year">2021</div><div class="data-title">Walter de Groot Scholar<div class="data-sub">American Vein and Lymphatic Society</div></div></div>
       <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://www.ccny.cuny.edu/bme">Wallace H. Coulter Award for Outstanding Undergraduate Research</a><div class="data-sub">City College of New York, Biomedical Engineering</div></div></div>
-      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title">Dean's List<div class="data-sub">Macaulay Honors College</div></div></div>
       <div class="data-row"><div class="data-year">2014 to 2017</div><div class="data-title">Member, Tau Beta Pi<div class="data-sub">National Engineering Honor Society</div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title">Dean's List<div class="data-sub">Macaulay Honors College</div></div></div>
     </div>
   </div>
 
@@ -257,6 +260,9 @@
   var grid = document.querySelector('.station-grid');
   var svg  = document.getElementById('routes');
   var path = document.getElementById('route-line');
+  var trainMotion = document.getElementById('train-motion');
+  var trainGrp = document.getElementById('train');
+
   function draw(){
     if (window.innerWidth <= 820) return;            // single column on mobile: no map lines
     var w = grid.offsetWidth, h = grid.offsetHeight;
@@ -269,14 +275,24 @@
       pts.push({ x: r.left - gr.left + r.width/2, y: r.top - gr.top + r.height/2 });
     });
     if (!pts.length) return;
+    
     // orthogonal "subway" routing: between stops, jog vertically to a midline, then across
     var d = 'M ' + pts[0].x + ' ' + pts[0].y;
     for (var i=1; i<pts.length; i++){
       var a = pts[i-1], b = pts[i], midY = (a.y + b.y)/2;
       d += ' L ' + a.x + ' ' + midY + ' L ' + b.x + ' ' + midY + ' L ' + b.x + ' ' + b.y;
     }
+    
+    // apply line drawing
     path.setAttribute('d', d);
+
+    // apply train animation directly to the generated path
+    if (trainMotion) {
+      trainMotion.setAttribute('path', d);
+      trainGrp.style.visibility = 'visible';
+    }
   }
+  
   window.addEventListener('load', draw);
   window.addEventListener('resize', draw);
   // fonts can shift layout after load; redraw shortly after
