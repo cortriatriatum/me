@@ -147,6 +147,34 @@
       .sb-msg { transition: none; }
       .station { transition: none; }
     }
+    /* animated witty sublabel in each header; static title stays put */
+    .station-tag {
+      margin-left: auto; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--mta-gray); white-space: nowrap; opacity: 0.8;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .station-tag.swap { opacity: 0; transform: translateY(-4px); }
+    @media (max-width: 600px) { .station-tag { display: none; } }
+
+    /* one-click citation copy on each publication */
+    .cite-btn {
+      display: inline-block; margin-top: 4px; font-family: inherit; font-size: 0.58rem;
+      font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--black);
+      background: var(--mta-yellow); border: 1px solid var(--black); padding: 1px 7px;
+      cursor: pointer; box-shadow: 1px 1px 0 var(--black);
+    }
+    .cite-btn:hover { transform: translate(-1px,-1px); box-shadow: 2px 2px 0 var(--black); }
+    .cite-btn:active { transform: translate(0,0); box-shadow: 0 0 0 var(--black); }
+
+    .toast {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--black); color: #fff; padding: 8px 14px; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.04em; box-shadow: 3px 3px 0 rgba(0,0,0,0.25); opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease; z-index: 60; display: flex; align-items: center; gap: 8px;
+    }
+    .toast .tdot { width: 8px; height: 8px; border-radius: 50%; background: var(--mta-green); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (prefers-reduced-motion: reduce) { .station-tag, .cite-btn, .toast { transition: none; } }
   </style>
 </head>
 <body>
@@ -340,9 +368,14 @@
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   function mmdd(d){ return pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
   function clock(){
-    var d = new Date(), h = d.getHours(), m = d.getMinutes();
-    var ap = h >= 12 ? 'PM' : 'AM', hh = h % 12; if (hh === 0) hh = 12;
-    timeEl.textContent = hh + ':' + pad(m) + ' ' + ap;
+    try {
+      var fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit' });
+      timeEl.textContent = fmt.format(new Date()) + ' Portland';
+    } catch (e) {
+      var d = new Date(), h = d.getHours(), m = d.getMinutes();
+      var ap = h >= 12 ? 'PM' : 'AM', hh = h % 12; if (hh === 0) hh = 12;
+      timeEl.textContent = hh + ':' + pad(m) + ' ' + ap;
+    }
   }
 
   // Open-Meteo weather-code -> friendly status (Fahrenheit; US convention)
@@ -362,13 +395,21 @@
   }
 
   var messages = EVERGREEN.slice();
-  var idx = 0, weatherMode = 'none';
+  var idx = 0, weatherMode = 'none', daylightLine = null;
+
+  function fmtISOtime(s){
+    var t = (s || '').split('T')[1]; if (!t) return '';
+    var p = t.split(':'), h = parseInt(p[0], 10), m = p[1];
+    var ap = h >= 12 ? 'PM' : 'AM', hh = h % 12; if (hh === 0) hh = 12;
+    return hh + ':' + m + ' ' + ap;
+  }
 
   function rebuildMessages(weather){
     var today = HOLIDAYS[mmdd(new Date())];
     var list = [];
-    if (weather) list.push(weather.line);
-    if (today)   list.push(today.line);
+    if (weather)      list.push(weather.line);
+    if (daylightLine) list.push(daylightLine);
+    if (today)        list.push(today.line);
     list = list.concat(EVERGREEN);
     messages = list;
     idx = 0;
@@ -386,9 +427,12 @@
   // ---- weather fetch (no key) ----
   function loadWeather(){
     var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
-              '&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto';
+              '&current=temperature_2m,weather_code&daily=sunrise,sunset&temperature_unit=fahrenheit&timezone=auto';
     fetch(url).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
       if (!j || !j.current) { rebuildMessages(null); return; }
+      if (j.daily && j.daily.sunrise && j.daily.sunset) {
+        daylightLine = 'Daylight in ' + CITY + ': ' + fmtISOtime(j.daily.sunrise[0]) + ' to ' + fmtISOtime(j.daily.sunset[0]) + '.';
+      }
       var w = weatherLine(j.current.weather_code, j.current.temperature_2m);
       rebuildMessages(w);
       setAmbient(w.code);
@@ -451,6 +495,91 @@
   setInterval(loadWeather, 30*60*1000);   // refresh weather every 30 min
   if (!reduce) setInterval(cycle, 7000);   // cycle status lines
   midnightRefresh();
+})();
+</script>
+<script>
+/* Witty animated header sublabels (title stays static) + one-click citation copy. */
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- per-section signage that rotates, one header at a time ----
+  var TAGS = {
+    identity:   ['now boarding', 'all aboard', 'this way in'],
+    focus:      ['express service', 'limited stops', 'next stop: a cause'],
+    side:       ['nights & weekends', 'off-peak builds', 'shuttle service'],
+    education:  ['uptown', '137 St · City College', 'transfers here'],
+    experience: ['via the express', 'all transfers'],
+    community:  ['local service', 'every stop', 'community board'],
+    funding:    ['fare paid', 'swipe accepted'],
+    honors:     ['priority seating', 'express awards'],
+    pubs:       ['free reading', 'take one', 'peer reviewed']
+  };
+  var tagEls = [];
+  document.querySelectorAll('.station').forEach(function(st){
+    var key = Object.keys(TAGS).filter(function(k){ return st.classList.contains(k); })[0];
+    if (!key) return;
+    var span = document.createElement('span');
+    span.className = 'station-tag';
+    span.textContent = TAGS[key][0];
+    span._tags = TAGS[key]; span._i = 0;
+    var hdr = st.querySelector('.station-header'); if (hdr) hdr.appendChild(span);
+    tagEls.push(span);
+  });
+  if (!reduce && tagEls.length){
+    var turn = 0;
+    setInterval(function(){
+      var el = tagEls[turn % tagEls.length]; turn++;
+      el._i = (el._i + 1) % el._tags.length;
+      el.classList.add('swap');
+      setTimeout(function(){ el.textContent = el._tags[el._i]; el.classList.remove('swap'); }, 400);
+    }, 3200);
+  }
+
+  // ---- copy a formatted citation for any publication ----
+  var CITES = {
+    'ajpheart.00741': 'Mathews R, Hinds MT, Woltjer RL, Muralidaran A. Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta. Am J Physiol Heart Circ Physiol. 2026;330(3):H869-H873. doi:10.1152/ajpheart.00741.2025',
+    '38099327': 'Mathews R, Setthavongsack N, Le-Cook A, Kaempf A, Loftis JM, Woltjer RL, Lorentz CU, Revenko A, Hinds MT, Nguyen KP. Role of platelet count in a murine stasis model of deep vein thrombosis. Platelets. 2024;35(1):2290916.',
+    '38359323': 'Mathews R, Hinds MT, Nguyen KP. Venous thromboembolism: diagnostic advances and unaddressed challenges in management. Curr Opin Hematol. 2024;31(3):122-129.',
+    '39393311': 'Mathews R, Pang J, Muralidaran SA, King CGX, McCarty OJT, Hinds MT. AMP-dependent protein kinase regulates endothelial heparan sulfate expression in response to an inflammatory stimulus under arterial shear stress. Biochem Biophys Res Commun. 2024;735:150743.',
+    '34059731': 'Bartosch AMW, Mathews R, Mahmoud MM, Cancel LM, Haq ZS, Tarbell JM. Heparan sulfate proteoglycan glypican-1 and PECAM-1 cooperate in shear-induced endothelial nitric oxide production. Sci Rep. 2021;11(1):11386.',
+    '32647868': 'Mahmoud M, Mayer M, Cancel LM, Bartosch AM, Mathews R, Tarbell JM. The glycocalyx core protein glypican-1 protects vessel wall endothelial cells from stiffness-mediated dysfunction and disease. Cardiovasc Res. 2021;117(6):1592-1605.',
+    '28700908': 'Bartosch AMW, Mathews R, Tarbell JM. Endothelial glycocalyx-mediated nitric oxide production in response to selective AFM pulling. Biophys J. 2017;113(1):101-108.'
+  };
+
+  var toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = '<span class="tdot"></span><span id="toastMsg"></span>';
+  document.body.appendChild(toast);
+  var toastMsg = toast.querySelector('#toastMsg'), toastTimer;
+  function showToast(t){
+    toastMsg.textContent = t; toast.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 1900);
+  }
+  function fallbackCopy(text, ok){
+    var ta = document.createElement('textarea'); ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); ok(); } catch (e) { showToast('Copy failed — select manually'); }
+    document.body.removeChild(ta);
+  }
+  function copyText(text, ok){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function(){ fallbackCopy(text, ok); });
+    } else { fallbackCopy(text, ok); }
+  }
+
+  var pubCard = document.querySelector('.station.pubs');
+  if (pubCard){
+    pubCard.querySelectorAll('.data-row').forEach(function(row){
+      var a = row.querySelector('a[href]'); if (!a) return;
+      var href = a.getAttribute('href');
+      var key = Object.keys(CITES).filter(function(k){ return href.indexOf(k) !== -1; })[0];
+      if (!key) return;
+      var btn = document.createElement('button');
+      btn.className = 'cite-btn'; btn.type = 'button'; btn.textContent = 'Cite';
+      btn.addEventListener('click', function(){ copyText(CITES[key], function(){ showToast('Citation copied'); }); });
+      (row.querySelector('.data-title') || row).appendChild(btn);
+    });
+  }
 })();
 </script>
 </body>
