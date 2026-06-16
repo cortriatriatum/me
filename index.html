@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. Subway Map – Fully Restored Links, Full Publication Titles, Clean Typography, No Desktop Scroll. -->
+<!-- Rick Mathews. Subway Map – Grid scrolls vertically if needed, no body scroll. All sections reachable. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -7,14 +7,12 @@
   <title>Rick Mathews</title>
   <meta name="description" content="Rick Mathews. Biomedical engineer and MD/PhD candidate at OHSU. Mapping the missing developmental baseline for coarctation of the aorta.">
   <style>
-    /* ---------- RESET & VARIABLES ---------- */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    /* Subway colour palette – classic MTA Vignelli inspired */
     :root {
       --mta-red: #EE352E;
       --mta-blue: #0039A6;
@@ -26,10 +24,10 @@
       --mta-dark-gray: #63666A;
       --black: #111;
       --white: #FFF;
-      --bg: #F4F5F7;          /* warm paper background */
+      --bg: #F4F5F7;
     }
 
-    /* Body is fixed – no page scroll. Internal cards scroll independently. */
+    /* body is fixed – no page scroll */
     body {
       background: var(--bg);
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -42,7 +40,6 @@
       position: fixed;
     }
 
-    /* Main container – tight padding, full viewport height */
     .subway-system {
       height: 100vh;
       padding: 12px;
@@ -50,21 +47,22 @@
       flex-direction: column;
     }
 
-    /* ---------- CUSTOM GRID – NO FIXED ROW HEIGHTS ---------- */
+    /* grid container can scroll vertically if needed – no body scroll */
     .station-grid {
       flex: 1;
       min-height: 0;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
-      grid-auto-rows: minmax(min-content, auto);  /* rows size to content */
+      grid-auto-rows: minmax(min-content, auto);
       grid-template-areas:
         "identity identity focus"
         "side funding education"
         "community pubs pubs";
+      overflow-y: auto;       /* grid itself scrolls if content overflows – but body stays fixed */
+      padding-right: 4px;     /* space for scrollbar */
     }
 
-    /* assign each station to its named area */
     .station.identity { grid-area: identity; }
     .station.focus { grid-area: focus; }
     .station.side { grid-area: side; }
@@ -73,7 +71,6 @@
     .station.community { grid-area: community; }
     .station.pubs { grid-area: pubs; }
 
-    /* Station card – internal scroll if content exceeds available height */
     .station {
       background: var(--white);
       border-left: 6px solid var(--mta-gray);
@@ -83,10 +80,11 @@
       box-shadow: 3px 3px 0 rgba(0,0,0,0.08);
       display: flex;
       flex-direction: column;
-      overflow-y: auto;              /* each card scrolls independently */
+      overflow-y: auto;       /* internal card scroll for long content */
+      max-height: 100%;       /* respect grid row height */
     }
 
-    /* Line‑specific coloured left borders (subway theme) */
+    /* line colours */
     .station.line-red { border-left-color: var(--mta-red); }
     .station.line-blue { border-left-color: var(--mta-blue); }
     .station.line-green { border-left-color: var(--mta-green); }
@@ -95,7 +93,7 @@
     .station.line-yellow { border-left-color: var(--mta-yellow); }
     .station.line-dark { border-left-color: var(--mta-dark-gray); }
 
-    /* Sticky header – stays visible when scrolling inside card */
+    /* sticky header inside each card */
     .station-header {
       background: var(--black);
       padding: 8px 12px;
@@ -121,7 +119,6 @@
       border: 2px solid var(--black);
       box-shadow: 0 0 0 2px var(--white);
     }
-    /* coloured bullets for each line */
     .bullet.red { background: var(--mta-red); }
     .bullet.blue { background: var(--mta-blue); }
     .bullet.green { background: var(--mta-green); }
@@ -138,19 +135,16 @@
       font-size: 1rem;
     }
 
-    /* ---------- TYPOGRAPHY – LARGER & READABLE ---------- */
     .station-content {
       padding: 12px;
     }
-    /* base font size for most content – easy to read */
+    /* base font size – readable and not tiny */
     .station-content, .data-row, .build-item, .highlight {
       font-size: 0.9rem;
     }
-    /* identity section slightly larger for emphasis */
     .identity .station-content { font-size: 1rem; }
     .focus .station-content { font-size: 0.95rem; }
 
-    /* link styling – blue underlines on hover only (clean) */
     a {
       color: var(--mta-blue);
       text-decoration: none;
@@ -160,7 +154,6 @@
     }
     a:hover { border-bottom-color: var(--mta-blue); }
 
-    /* main name – large, bold */
     h1 {
       font-size: 1.8rem;
       font-weight: 800;
@@ -168,7 +161,6 @@
       margin-bottom: 4px;
     }
 
-    /* data rows: year + title + subtitle */
     .data-row {
       display: flex;
       flex-direction: column;
@@ -190,7 +182,6 @@
       color: #5A6268;
     }
 
-    /* focus line and highlight boxes */
     .focus-line {
       border-left: 3px solid var(--mta-red);
       padding-left: 10px;
@@ -215,7 +206,6 @@
       margin-bottom: 4px;
     }
 
-    /* portal buttons – clean, with emoji icons */
     .button-group {
       display: flex;
       flex-wrap: wrap;
@@ -242,31 +232,22 @@
     }
     .micro { font-size: 0.7rem; }
 
-    /* remove extra white space at bottom of cards */
+    /* remove extra margin at bottom of cards */
     .station-content :last-child {
       margin-bottom: 0;
     }
 
-    /* ---------- MOBILE – STACK CARDS, ENABLE PAGE SCROLL ---------- */
+    /* mobile: stack cards, allow grid scroll naturally */
     @media (max-width: 800px) {
-      body {
-        position: relative;
-        height: auto;
-        overflow-y: auto;
-      }
-      .subway-system {
-        height: auto;
-        padding: 10px;
-      }
       .station-grid {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        overflow-y: auto;
       }
       .station {
-        overflow-y: visible;
+        max-height: none;
+        margin-bottom: 12px;
       }
-      /* increase font sizes for touch readability */
       .station-content, .data-row, .build-item, .highlight {
         font-size: 1rem;
       }
@@ -288,7 +269,7 @@
 <body>
 <div class="subway-system">
   <div class="station-grid">
-    <!-- 0: IDENTITY & PORTALS (spans 2 cols) -->
+    <!-- 0: IDENTITY & PORTALS -->
     <div class="station line-dark identity">
       <div class="station-header">
         <div class="bullet dark">0</div>
@@ -297,7 +278,6 @@
       <div class="station-content">
         <h1>Rick Mathews</h1>
         <div style="margin-bottom: 2px;">Biomedical Engineer × Medicine</div>
-        <!-- Tagline: precise, confident, future‑focused -->
         <div style="font-style: italic; margin: 6px 0 4px 0;">Mapping what’s missing — building the bridge between biology and solutions.</div>
         <div>MD/PhD Candidate, <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program/rick-mathews-phd">Oregon Health &amp; Science University Medical Scientist Training Program</a></div>
         <div style="font-size:0.75rem; color:#5A6268; margin: 6px 0 0 0;">Portland, Oregon · 2026</div>
@@ -311,7 +291,7 @@
       </div>
     </div>
 
-    <!-- 1: CURRENT FOCUS – coarctation of the aorta -->
+    <!-- 1: CURRENT FOCUS -->
     <div class="station line-red focus">
       <div class="station-header"><div class="bullet red">1</div><span class="station-title">Current Focus</span></div>
       <div class="station-content">
@@ -332,7 +312,7 @@
       </div>
     </div>
 
-    <!-- 2: SIDE PROJECTS – Anki add‑ons -->
+    <!-- 2: SIDE PROJECTS -->
     <div class="station line-blue side">
       <div class="station-header"><div class="bullet blue">2</div><span class="station-title">Side Projects</span></div>
       <div class="station-content">
@@ -349,7 +329,7 @@
       </div>
     </div>
 
-    <!-- 3: FUNDING – most recent first, full names -->
+    <!-- 3: FUNDING -->
     <div class="station line-green funding">
       <div class="station-header"><div class="bullet green">3</div><span class="station-title">Funding</span></div>
       <div class="station-content">
@@ -360,7 +340,7 @@
       </div>
     </div>
 
-    <!-- 4: EDUCATION – full degree names, no abbreviations -->
+    <!-- 4: EDUCATION -->
     <div class="station line-orange education">
       <div class="station-header"><div class="bullet orange">4</div><span class="station-title">Education</span></div>
       <div class="station-content">
@@ -370,7 +350,7 @@
       </div>
     </div>
 
-    <!-- 5: COMMUNITY & ROLES – most recent first, all hyperlinks restored -->
+    <!-- 5: COMMUNITY & ROLES (all hyperlinks restored) -->
     <div class="station line-purple community">
       <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community & Roles</span></div>
       <div class="station-content">
@@ -382,7 +362,7 @@
       </div>
     </div>
 
-    <!-- 6: PUBLICATIONS – full titles, most recent first, links to PubMed/DOI -->
+    <!-- 6: PUBLICATIONS (full titles) -->
     <div class="station line-dark pubs">
       <div class="station-header"><div class="bullet" style="background:#A7A9AC;">6</div><span class="station-title">Publications</span></div>
       <div class="station-content">
