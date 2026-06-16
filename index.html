@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. Subway Map – Most Recent First, No Abbreviations, Variable Card Sizes. -->
+<!-- Rick Mathews. Subway Map – Scrollable Cards, Fixed Page. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -34,7 +34,7 @@
       -webkit-font-smoothing: antialiased;
       height: 100vh;
       width: 100vw;
-      overflow: hidden;
+      overflow: hidden;        /* page never scrolls */
       position: fixed;
     }
 
@@ -45,15 +45,18 @@
       flex-direction: column;
     }
 
+    /* grid container takes all remaining space, scrolls internally if needed */
     .station-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
       flex: 1;
       min-height: 0;
-      align-items: start;
+      overflow-y: auto;       /* allows grid to scroll as a whole if absolutely needed,
+                                 but with scrollable cards it rarely triggers */
     }
 
+    /* each station card scrolls its own content */
     .station {
       background: var(--white);
       border-left: 6px solid var(--mta-gray);
@@ -63,12 +66,15 @@
       box-shadow: 3px 3px 0 rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
-      break-inside: avoid;
+      overflow-y: auto;       /* card scrolls internally */
+      max-height: 100%;       /* respect grid row height */
     }
 
+    /* manual spans */
     .station.span-2x1 { grid-column: span 2; }
     .station.span-1x2 { grid-row: span 2; }
 
+    /* line colours */
     .station.line-red { border-left-color: var(--mta-red); }
     .station.line-blue { border-left-color: var(--mta-blue); }
     .station.line-green { border-left-color: var(--mta-green); }
@@ -77,6 +83,7 @@
     .station.line-yellow { border-left-color: var(--mta-yellow); }
     .station.line-dark { border-left-color: var(--mta-dark-gray); }
 
+    /* sticky header inside each card */
     .station-header {
       background: var(--black);
       padding: 6px 12px;
@@ -208,21 +215,22 @@
     }
     .micro { font-size: 0.6rem; }
 
+    /* responsive fallback */
     @media (max-width: 800px) {
       .station-grid {
         grid-template-columns: 1fr;
-        overflow-y: auto;
       }
-      body { overflow-y: auto; position: relative; height: auto; }
-      .subway-system { height: auto; }
-      .station.span-2x1, .station.span-1x2 { grid-column: span 1; grid-row: span 1; }
+      .station.span-2x1, .station.span-1x2 {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
     }
   </style>
 </head>
 <body>
 <div class="subway-system">
   <div class="station-grid">
-    <!-- 0: IDENTITY & PORTALS – spans 2 columns -->
+    <!-- 0: IDENTITY & PORTALS (spans 2 columns) -->
     <div class="station line-dark span-2x1">
       <div class="station-header">
         <div class="bullet dark">0</div>
@@ -302,7 +310,7 @@
       </div>
     </div>
 
-    <!-- 5: COMMUNITY & ROLES (most recent first, Gol removed) -->
+    <!-- 5: COMMUNITY & ROLES (most recent first, Groove Capital corrected) -->
     <div class="station line-purple span-1x2">
       <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community & Roles</span></div>
       <div class="station-content">
