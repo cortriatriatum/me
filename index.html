@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. Subway Map – Scrollable Cards, Fixed Page. -->
+<!-- Rick Mathews. Subway Map – Custom Grid, Scrollable Cards, Fixed Page. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -34,7 +34,7 @@
       -webkit-font-smoothing: antialiased;
       height: 100vh;
       width: 100vw;
-      overflow: hidden;        /* page never scrolls */
+      overflow: hidden;
       position: fixed;
     }
 
@@ -45,18 +45,30 @@
       flex-direction: column;
     }
 
-    /* grid container takes all remaining space, scrolls internally if needed */
+    /* custom grid areas for precise control */
     .station-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
       flex: 1;
       min-height: 0;
-      overflow-y: auto;       /* allows grid to scroll as a whole if absolutely needed,
-                                 but with scrollable cards it rarely triggers */
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 12px;
+      grid-template-areas:
+        "identity identity focus"
+        "side funding education"
+        "community pubs pubs";
     }
 
-    /* each station card scrolls its own content */
+    /* assign each station to its area */
+    .station.identity { grid-area: identity; }
+    .station.focus { grid-area: focus; }
+    .station.side { grid-area: side; }
+    .station.funding { grid-area: funding; }
+    .station.education { grid-area: education; }
+    .station.community { grid-area: community; }
+    .station.pubs { grid-area: pubs; }
+
+    /* station card styling */
     .station {
       background: var(--white);
       border-left: 6px solid var(--mta-gray);
@@ -67,12 +79,7 @@
       display: flex;
       flex-direction: column;
       overflow-y: auto;       /* card scrolls internally */
-      max-height: 100%;       /* respect grid row height */
     }
-
-    /* manual spans */
-    .station.span-2x1 { grid-column: span 2; }
-    .station.span-1x2 { grid-row: span 2; }
 
     /* line colours */
     .station.line-red { border-left-color: var(--mta-red); }
@@ -83,7 +90,7 @@
     .station.line-yellow { border-left-color: var(--mta-yellow); }
     .station.line-dark { border-left-color: var(--mta-dark-gray); }
 
-    /* sticky header inside each card */
+    /* sticky header */
     .station-header {
       background: var(--black);
       padding: 6px 12px;
@@ -218,11 +225,12 @@
     /* responsive fallback */
     @media (max-width: 800px) {
       .station-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
       }
-      .station.span-2x1, .station.span-1x2 {
-        grid-column: span 1;
-        grid-row: span 1;
+      .station {
+        margin-bottom: 12px;
       }
     }
   </style>
@@ -230,8 +238,8 @@
 <body>
 <div class="subway-system">
   <div class="station-grid">
-    <!-- 0: IDENTITY & PORTALS (spans 2 columns) -->
-    <div class="station line-dark span-2x1">
+    <!-- IDENTITY & PORTALS (spans 2 cols) -->
+    <div class="station line-dark identity">
       <div class="station-header">
         <div class="bullet dark">0</div>
         <span class="station-title">Identity & Portals</span>
@@ -251,8 +259,8 @@
       </div>
     </div>
 
-    <!-- 1: CURRENT FOCUS -->
-    <div class="station line-red">
+    <!-- CURRENT FOCUS -->
+    <div class="station line-red focus">
       <div class="station-header"><div class="bullet red">1</div><span class="station-title">Current Focus</span></div>
       <div class="station-content">
         <div class="focus-line">
@@ -272,8 +280,8 @@
       </div>
     </div>
 
-    <!-- 2: SIDE PROJECTS -->
-    <div class="station line-blue">
+    <!-- SIDE PROJECTS -->
+    <div class="station line-blue side">
       <div class="station-header"><div class="bullet blue">2</div><span class="station-title">Side Projects</span></div>
       <div class="station-content">
         <div class="build-item">
@@ -289,8 +297,8 @@
       </div>
     </div>
 
-    <!-- 3: FUNDING (most recent first) -->
-    <div class="station line-green">
+    <!-- FUNDING (most recent first, corrected T32 number) -->
+    <div class="station line-green funding">
       <div class="station-header"><div class="bullet green">3</div><span class="station-title">Funding</span></div>
       <div class="station-content">
         <div class="data-row"><div class="data-year">2026–27</div><div class="data-title"><a href="https://www.ohsufoundation.org/doernbecher-childrens-hospital/friends-of-doernbecher/">Friends of Doernbecher Grant</a><div class="data-sub">OHSU Doernbecher Children's Hospital</div></div></div>
@@ -300,8 +308,8 @@
       </div>
     </div>
 
-    <!-- 4: EDUCATION (most recent first) -->
-    <div class="station line-orange">
+    <!-- EDUCATION (most recent first) -->
+    <div class="station line-orange education">
       <div class="station-header"><div class="bullet orange">4</div><span class="station-title">Education</span></div>
       <div class="station-content">
         <div class="data-row"><div class="data-year">2018–26</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/md-program">Doctor of Medicine (M.D.) Candidate</a><div class="data-sub">Oregon Health &amp; Science University</div></div></div>
@@ -310,8 +318,8 @@
       </div>
     </div>
 
-    <!-- 5: COMMUNITY & ROLES (most recent first, Groove Capital corrected) -->
-    <div class="station line-purple span-1x2">
+    <!-- COMMUNITY & ROLES (most recent first, Groove Capital corrected, Gol removed) -->
+    <div class="station line-purple community">
       <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community & Roles</span></div>
       <div class="station-content">
         <div class="data-row"><div class="data-year">2022</div><div class="data-title">Looking to the Future Scholar<div class="data-sub">Society of Thoracic Surgeons</div></div></div>
@@ -322,8 +330,8 @@
       </div>
     </div>
 
-    <!-- 6: PUBLICATIONS (most recent first) -->
-    <div class="station line-dark">
+    <!-- PUBLICATIONS (most recent first, spans 2 columns horizontally under Education) -->
+    <div class="station line-dark pubs">
       <div class="station-header"><div class="bullet" style="background:#A7A9AC;">6</div><span class="station-title">Publications</span></div>
       <div class="station-content">
         <div class="data-row"><div class="data-year">2026</div><div class="data-title"><a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal‑aortic junction</a><div class="data-sub">American Journal of Physiology Heart and Circulatory Physiology</div></div></div>
@@ -331,6 +339,7 @@
         <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38359323/">Venous thromboembolism: diagnostic advances and unaddressed challenges in management</a><div class="data-sub">Current Opinion in Hematology. 2024;31(3):122-129</div></div></div>
         <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/39393311/">AMP dependent protein kinase regulates endothelial heparan sulfate expression in response to an inflammatory stimulus under arterial shear stress</a><div class="data-sub">Biochemical and Biophysical Research Communications. 2024;735:150743</div></div></div>
         <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/34059731/">Heparan sulfate proteoglycan glypican‑1 and PECAM‑1 cooperate in shear‑induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports. 2021;11(1):11386</div></div></div>
+        <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/28700908/">Endothelial Glycocalyx‑Mediated Nitric Oxide Production in Response to Selective AFM Pulling</a><div class="data-sub">Biophysical Journal. 2017;113(1):101-108</div></div></div>
         <div class="highlight micro" style="margin-top:6px; padding:4px;">
           📄 Full list: <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a>
         </div>
