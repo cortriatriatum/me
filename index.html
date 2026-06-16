@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. Subway Map – Optimised Spacing, No Scroll Desktop, Readable Fonts. -->
+<!-- Rick Mathews. Subway Map – Large, Readable Fonts, Minimal White Space. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -30,7 +30,7 @@
       background: var(--bg);
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--black);
-      line-height: 1.35;
+      line-height: 1.4;
       -webkit-font-smoothing: antialiased;
       height: 100vh;
       width: 100vw;
@@ -40,19 +40,19 @@
 
     .subway-system {
       height: 100vh;
-      padding: 10px 12px 12px 12px;  /* tighter top padding */
+      padding: 12px;
       display: flex;
       flex-direction: column;
     }
 
-    /* custom grid – no wasted gaps */
+    /* custom grid – uses all space */
     .station-grid {
       flex: 1;
       min-height: 0;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
       grid-template-rows: auto auto auto;
-      gap: 10px;
+      gap: 12px;
       grid-template-areas:
         "identity identity focus"
         "side funding education"
@@ -67,17 +67,16 @@
     .station.community { grid-area: community; }
     .station.pubs { grid-area: pubs; }
 
-    /* station card – internal scroll only if needed */
     .station {
       background: var(--white);
       border-left: 6px solid var(--mta-gray);
       border-right: 2px solid var(--black);
       border-top: 2px solid var(--black);
       border-bottom: 2px solid var(--black);
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.06);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.08);
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
+      overflow-y: auto;        /* internal scroll if needed */
     }
 
     /* line colours */
@@ -89,28 +88,28 @@
     .station.line-yellow { border-left-color: var(--mta-yellow); }
     .station.line-dark { border-left-color: var(--mta-dark-gray); }
 
-    /* sticky header – tighter padding */
+    /* sticky header */
     .station-header {
       background: var(--black);
-      padding: 5px 10px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-shrink: 0;
       position: sticky;
       top: 0;
       z-index: 2;
     }
     .bullet {
-      width: 22px;
-      height: 22px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: var(--mta-gray);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 0.75rem;
+      font-size: 0.9rem;
       color: white;
       border: 2px solid var(--black);
       box-shadow: 0 0 0 2px var(--white);
@@ -128,25 +127,23 @@
       letter-spacing: -0.02em;
       text-transform: uppercase;
       color: white;
-      font-size: 0.8rem;
+      font-size: 1rem;
     }
 
-    /* content – compact but readable */
+    /* base content font – larger and clear */
     .station-content {
-      padding: 8px 10px;
+      padding: 12px;
+      font-size: 0.9rem;
     }
 
-    /* typography scales: slightly larger for key sections, smaller for dense lists */
-    .station-content, .data-row, .build-item, .highlight {
-      font-size: 0.75rem;
-    }
-    .identity .station-content { font-size: 0.85rem; }
-    .focus .station-content { font-size: 0.8rem; }
-    .data-year { font-size: 0.7rem; }
-    .data-title { font-size: 0.75rem; font-weight: 600; }
-    .data-sub { font-size: 0.65rem; }
-    .build-tag { font-size: 0.55rem; padding: 1px 4px; }
-    .portal-btn { font-size: 0.65rem; padding: 3px 8px; }
+    /* different sections can have slightly different scales, but all are readable */
+    .identity .station-content { font-size: 1rem; }
+    .focus .station-content { font-size: 0.95rem; }
+    .side .station-content { font-size: 0.95rem; }
+    .funding .station-content { font-size: 0.9rem; }
+    .education .station-content { font-size: 0.9rem; }
+    .community .station-content { font-size: 0.9rem; }
+    .pubs .station-content { font-size: 0.85rem; }  /* slightly smaller for many lines but still clear */
 
     a {
       color: var(--mta-blue);
@@ -157,63 +154,89 @@
     a:hover { border-bottom-color: var(--mta-blue); }
 
     h1 {
-      font-size: 1.3rem;
+      font-size: 1.6rem;
       font-weight: 800;
       letter-spacing: -0.02em;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
     }
 
-    /* compact rows */
+    /* compact but spacious data rows */
     .data-row {
       display: flex;
       flex-direction: column;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
       border-bottom: 1px solid #E9ECEF;
-      padding-bottom: 3px;
+      padding-bottom: 6px;
     }
+    .data-year {
+      font-weight: 800;
+      color: var(--mta-dark-gray);
+      font-size: 0.8rem;
+    }
+    .data-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .data-sub {
+      font-size: 0.75rem;
+      color: #5A6268;
+    }
+
     .focus-line {
       border-left: 3px solid var(--mta-red);
-      padding-left: 8px;
-      margin: 4px 0;
+      padding-left: 10px;
+      margin: 8px 0;
     }
     .highlight {
       border-left: 3px solid var(--mta-red);
       background: #FFF9F0;
-      padding: 5px 8px;
-      margin: 6px 0;
+      padding: 8px 10px;
+      margin: 10px 0;
     }
     .build-item {
-      margin-bottom: 6px;
+      margin-bottom: 12px;
     }
+    .build-tag {
+      background: var(--black);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 6px;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
     .button-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
+      gap: 8px;
+      margin-top: 10px;
     }
     .portal-btn {
       background: var(--white);
       border: 1.5px solid var(--black);
+      padding: 5px 12px;
       font-weight: 700;
+      font-size: 0.75rem;
       text-transform: uppercase;
       color: var(--black);
       box-shadow: 1px 1px 0 var(--black);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
     .portal-btn:hover {
       background: var(--mta-yellow);
       transform: translate(-1px, -1px);
     }
-    .micro { font-size: 0.6rem; }
+    .micro { font-size: 0.7rem; }
 
-    /* remove extra whitespace at the end of cards */
+    /* remove extra white space at bottom of cards */
     .station-content :last-child {
       margin-bottom: 0;
     }
 
-    /* mobile: stack cards, enable page scroll, increase font sizes slightly */
+    /* mobile: stack and allow page scroll */
     @media (max-width: 800px) {
       body {
         position: relative;
@@ -231,33 +254,32 @@
       }
       .station {
         overflow-y: visible;
-        max-height: none;
       }
       .station-content {
+        font-size: 1rem;
+      }
+      .identity .station-content, .focus .station-content, .side .station-content,
+      .funding .station-content, .education .station-content, .community .station-content,
+      .pubs .station-content {
+        font-size: 1rem;
+      }
+      .data-title {
+        font-size: 1rem;
+      }
+      .data-sub {
         font-size: 0.85rem;
-      }
-      .identity .station-content { font-size: 0.9rem; }
-      .focus .station-content { font-size: 0.85rem; }
-      .data-row, .build-item, .highlight {
-        font-size: 0.8rem;
-      }
-      .data-year, .data-sub {
-        font-size: 0.75rem;
-      }
-      .portal-btn {
-        font-size: 0.7rem;
-        padding: 5px 10px;
       }
       .bullet {
-        width: 26px;
-        height: 26px;
-        font-size: 0.85rem;
-      }
-      .station-header {
-        padding: 8px 12px;
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
       }
       .station-title {
-        font-size: 0.9rem;
+        font-size: 1.1rem;
+      }
+      .portal-btn {
+        font-size: 0.8rem;
+        padding: 6px 14px;
       }
     }
   </style>
@@ -273,9 +295,9 @@
       </div>
       <div class="station-content">
         <h1>Rick Mathews</h1>
-        <div>Biomedical Engineer × Medicine</div>
+        <div style="margin-bottom: 2px;">Biomedical Engineer × Medicine</div>
         <div>MD/PhD Candidate, <a href="https://www.ohsu.edu/people/rick-mathews-phd">OHSU MSTP</a></div>
-        <div style="font-size:0.65rem; color:#5A6268; margin-top: 2px;">Portland, Oregon · 2026</div>
+        <div style="font-size:0.75rem; color:#5A6268; margin: 4px 0 0 0;">Portland, Oregon · 2026</div>
         <div class="button-group">
           <a href="https://www.ohsu.edu/people/rick-mathews-phd" class="portal-btn">🏥 OHSU</a>
           <a href="https://www.linkedin.com/in/mathewsrick/" class="portal-btn">🔗 LinkedIn</a>
@@ -307,19 +329,19 @@
       </div>
     </div>
 
-    <!-- SIDE PROJECTS -->
+    <!-- SIDE PROJECTS (larger font) -->
     <div class="station line-blue side">
       <div class="station-header"><div class="bullet blue">2</div><span class="station-title">Side Projects</span></div>
       <div class="station-content">
         <div class="build-item">
           <div class="build-tag">Anki Add‑on</div>
           <strong><a href="https://ankiweb.net/shared/info/897423548">microbatch.</a></strong><br>
-          <span class="micro">10 cards at a time → finish line.</span>
+          <span>10 cards at a time → finish line.</span>
         </div>
         <div class="build-item">
           <div class="build-tag">Anki Add‑on</div>
           <strong><a href="https://ankiweb.net/shared/info/1985468740">Passive Reviewer.</a></strong><br>
-          <span class="micro">Fifth button, reschedule and move on.</span>
+          <span>Fifth button, reschedule and move on.</span>
         </div>
       </div>
     </div>
@@ -367,7 +389,7 @@
         <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/39393311/">AMP dependent protein kinase regulates endothelial heparan sulfate expression in response to an inflammatory stimulus under arterial shear stress</a><div class="data-sub">Biochemical and Biophysical Research Communications. 2024;735:150743</div></div></div>
         <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/34059731/">Heparan sulfate proteoglycan glypican‑1 and PECAM‑1 cooperate in shear‑induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports. 2021;11(1):11386</div></div></div>
         <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/28700908/">Endothelial Glycocalyx‑Mediated Nitric Oxide Production in Response to Selective AFM Pulling</a><div class="data-sub">Biophysical Journal. 2017;113(1):101-108</div></div></div>
-        <div class="highlight micro" style="margin-top:6px; padding:4px;">
+        <div class="highlight micro" style="margin-top:8px; padding:6px;">
           📄 Full list: <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a>
         </div>
       </div>
