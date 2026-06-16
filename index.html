@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- Rick Mathews. Subway Map – Grid scrolls vertically if needed, no body scroll. All sections reachable. -->
+<!-- Rick Mathews. Subway Map – All sections visible, no page/grid scroll. Card‑internal scroll only. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Rick Mathews</title>
+  <title>Rick Mathews | Subway Map · Coarctation Baseline</title>
   <meta name="description" content="Rick Mathews. Biomedical engineer and MD/PhD candidate at OHSU. Mapping the missing developmental baseline for coarctation of the aorta.">
   <style>
     * {
@@ -27,40 +27,38 @@
       --bg: #F4F5F7;
     }
 
-    /* body is fixed – no page scroll */
     body {
       background: var(--bg);
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--black);
-      line-height: 1.4;
+      line-height: 1.35;
       -webkit-font-smoothing: antialiased;
       height: 100vh;
       width: 100vw;
-      overflow: hidden;
+      overflow: hidden;        /* no page scroll ever */
       position: fixed;
     }
 
     .subway-system {
       height: 100vh;
-      padding: 12px;
+      padding: 8px 12px 12px 12px;  /* tighter top padding */
       display: flex;
       flex-direction: column;
     }
 
-    /* grid container can scroll vertically if needed – no body scroll */
+    /* grid – no overflow scroll; must fit exactly in viewport */
     .station-grid {
       flex: 1;
       min-height: 0;
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
+      gap: 10px;               /* reduced gap */
       grid-auto-rows: minmax(min-content, auto);
       grid-template-areas:
         "identity identity focus"
         "side funding education"
         "community pubs pubs";
-      overflow-y: auto;       /* grid itself scrolls if content overflows – but body stays fixed */
-      padding-right: 4px;     /* space for scrollbar */
+      /* critical: no overflow-y: auto */
     }
 
     .station.identity { grid-area: identity; }
@@ -77,11 +75,11 @@
       border-right: 2px solid var(--black);
       border-top: 2px solid var(--black);
       border-bottom: 2px solid var(--black);
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.08);
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
-      overflow-y: auto;       /* internal card scroll for long content */
-      max-height: 100%;       /* respect grid row height */
+      overflow-y: auto;        /* internal scroll ONLY if content too tall */
+      max-height: 100%;
     }
 
     /* line colours */
@@ -96,25 +94,25 @@
     /* sticky header inside each card */
     .station-header {
       background: var(--black);
-      padding: 8px 12px;
+      padding: 6px 10px;       /* tighter header */
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-shrink: 0;
       position: sticky;
       top: 0;
       z-index: 2;
     }
     .bullet {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: var(--mta-gray);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       color: white;
       border: 2px solid var(--black);
       box-shadow: 0 0 0 2px var(--white);
@@ -132,121 +130,141 @@
       letter-spacing: -0.02em;
       text-transform: uppercase;
       color: white;
-      font-size: 1rem;
+      font-size: 0.9rem;
     }
 
     .station-content {
-      padding: 12px;
+      padding: 8px 10px;       /* reduced content padding */
     }
-    /* base font size – readable and not tiny */
+
+    /* base font sizes – readable but compact enough to fit */
     .station-content, .data-row, .build-item, .highlight {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
-    .identity .station-content { font-size: 1rem; }
-    .focus .station-content { font-size: 0.95rem; }
+    .identity .station-content { font-size: 0.9rem; }
+    .focus .station-content { font-size: 0.85rem; }
 
     a {
       color: var(--mta-blue);
       text-decoration: none;
       font-weight: 600;
       border-bottom: 1px solid transparent;
-      transition: border-bottom 0.1s ease;
     }
     a:hover { border-bottom-color: var(--mta-blue); }
 
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: 800;
       letter-spacing: -0.02em;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .data-row {
       display: flex;
       flex-direction: column;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       border-bottom: 1px solid #E9ECEF;
-      padding-bottom: 6px;
+      padding-bottom: 4px;
     }
     .data-year {
       font-weight: 800;
       color: var(--mta-dark-gray);
-      font-size: 0.8rem;
+      font-size: 0.7rem;
     }
     .data-title {
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
     }
     .data-sub {
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       color: #5A6268;
     }
 
     .focus-line {
       border-left: 3px solid var(--mta-red);
-      padding-left: 10px;
-      margin: 8px 0;
+      padding-left: 8px;
+      margin: 4px 0;
     }
     .highlight {
       border-left: 3px solid var(--mta-red);
       background: #FFF9F0;
-      padding: 8px 10px;
-      margin: 10px 0;
+      padding: 5px 8px;
+      margin: 6px 0;
     }
     .build-item {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .build-tag {
       background: var(--black);
       color: white;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 800;
-      padding: 2px 6px;
+      padding: 1px 4px;
       display: inline-block;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .button-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
+      gap: 6px;
+      margin-top: 6px;
     }
     .portal-btn {
       background: var(--white);
       border: 1.5px solid var(--black);
-      padding: 5px 12px;
+      padding: 3px 8px;
       font-weight: 700;
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       text-transform: uppercase;
       color: var(--black);
       box-shadow: 1px 1px 0 var(--black);
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      transition: all 0.1s ease;
+      gap: 4px;
     }
     .portal-btn:hover {
       background: var(--mta-yellow);
       transform: translate(-1px, -1px);
     }
-    .micro { font-size: 0.7rem; }
+    .micro { font-size: 0.65rem; }
 
-    /* remove extra margin at bottom of cards */
+    /* remove extra bottom margin */
     .station-content :last-child {
       margin-bottom: 0;
     }
 
-    /* mobile: stack cards, allow grid scroll naturally */
+    /* Small screens / laptops: if content still overflows, allow grid scroll as fallback */
+    @media (max-height: 750px) {
+      .station-grid {
+        overflow-y: auto;      /* only on very short screens, but body still fixed */
+        padding-right: 4px;
+      }
+      .station {
+        overflow-y: visible;   /* prefer grid scroll over card scroll when very cramped */
+      }
+    }
+
+    /* mobile: stack and enable page scroll */
     @media (max-width: 800px) {
+      body {
+        position: relative;
+        height: auto;
+        overflow-y: auto;
+      }
+      .subway-system {
+        height: auto;
+        padding: 10px;
+      }
       .station-grid {
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
+        overflow-y: visible;
       }
       .station {
         max-height: none;
         margin-bottom: 12px;
+        overflow-y: visible;
       }
       .station-content, .data-row, .build-item, .highlight {
         font-size: 1rem;
@@ -269,7 +287,7 @@
 <body>
 <div class="subway-system">
   <div class="station-grid">
-    <!-- 0: IDENTITY & PORTALS -->
+    <!-- 0: IDENTITY & PORTALS (user edited) -->
     <div class="station line-dark identity">
       <div class="station-header">
         <div class="bullet dark">0</div>
@@ -277,10 +295,10 @@
       </div>
       <div class="station-content">
         <h1>Rick Mathews</h1>
-        <div style="margin-bottom: 2px;">Biomedical Engineer × Medicine</div>
-        <div style="font-style: italic; margin: 6px 0 4px 0;">Mapping what’s missing — building the bridge between biology and solutions.</div>
+        <div style="margin-bottom: 2px;">Biomedical Engineer × Physician-Scientist in Training</div>
+        <div style="font-style: italic; margin: 4px 0 4px 0;">Understanding Interesting Problems in the Life Science and Healthcare</div>
         <div>MD/PhD Candidate, <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program/rick-mathews-phd">Oregon Health &amp; Science University Medical Scientist Training Program</a></div>
-        <div style="font-size:0.75rem; color:#5A6268; margin: 6px 0 0 0;">Portland, Oregon · 2026</div>
+        <div style="font-size:0.7rem; color:#5A6268; margin: 4px 0 0 0;">Portland, Oregon · 2026</div>
         <div class="button-group">
           <a href="https://www.ohsu.edu/people/rick-mathews-phd" class="portal-btn">🏥 OHSU</a>
           <a href="https://www.linkedin.com/in/mathewsrick/" class="portal-btn">🔗 LinkedIn</a>
@@ -350,7 +368,7 @@
       </div>
     </div>
 
-    <!-- 5: COMMUNITY & ROLES (all hyperlinks restored) -->
+    <!-- 5: COMMUNITY & ROLES -->
     <div class="station line-purple community">
       <div class="station-header"><div class="bullet purple">5</div><span class="station-title">Community & Roles</span></div>
       <div class="station-content">
@@ -362,7 +380,7 @@
       </div>
     </div>
 
-    <!-- 6: PUBLICATIONS (full titles) -->
+    <!-- 6: PUBLICATIONS -->
     <div class="station line-dark pubs">
       <div class="station-header"><div class="bullet" style="background:#A7A9AC;">6</div><span class="station-title">Publications</span></div>
       <div class="station-content">
@@ -373,7 +391,7 @@
         <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/34059731/">Heparan sulfate proteoglycan glypican‑1 and PECAM‑1 cooperate in shear‑induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports. 2021;11(1):11386</div></div></div>
         <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/32647868/">The glycocalyx core protein Glypican 1 protects vessel wall endothelial cells from stiffness‑mediated dysfunction and disease</a><div class="data-sub">Cardiovascular Research. 2021;117(6):1592-1605</div></div></div>
         <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/28700908/">Endothelial Glycocalyx‑Mediated Nitric Oxide Production in Response to Selective AFM Pulling</a><div class="data-sub">Biophysical Journal. 2017;113(1):101-108</div></div></div>
-        <div class="highlight micro" style="margin-top:8px; padding:6px;">
+        <div class="highlight micro" style="margin-top:6px; padding:4px;">
           📄 Full list: <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a>
         </div>
       </div>
