@@ -5,21 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rick Mathews, PhD</title>
   <meta name="description" content="Rick Mathews. Biomedical engineer and Physician-Scientist in training at the Oregon Health & Science University.">
+  <script>
+    /* apply saved theme before first paint to avoid a flash; localStorage may be blocked in some embeds */
+    try { var _t = localStorage.getItem('theme'); if (_t === 'dark' || _t === 'light') document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
+      /* MTA accent palette — fixed in both themes */
       --mta-red:#EE352E; --mta-blue:#0039A6; --mta-green:#00933C; --mta-orange:#FF6319;
       --mta-yellow:#FCCC0A; --mta-purple:#B933AD; --mta-gray:#A7A9AC; --mta-dark-gray:#63666A;
       --mta-brown:#996633; --mta-light-green:#6CBE45;
-      --black:#111; --white:#FFF; --bg:#EDEEF0;
+      --black:#111; --white:#FFF;
+
+      /* semantic tokens — LIGHT (default) */
+      --bg:#EDEEF0; --surface:#FFFFFF;
+      --board-bg:#111111; --board-ink:#FFFFFF;
+      --ink:#14161A; --sub:#4C525A; --sub-strong:#52565B;
+      --border:#111111; --rule:#E4E7EA; --link:#0039A6;
+      --hl-warm:#FFF9F0; --hl-blue:#F2F5FC; --hl-green:#F0FAF3;
+      --scroll-thumb:#CBD0D5; --scroll-thumb-h:#A7A9AC;
+      --sh-1:rgba(0,0,0,0.06); --sh-2:rgba(0,0,0,0.12);
+    }
+
+    /* semantic tokens — DARK (explicit choice) */
+    :root[data-theme="dark"] {
+      --bg:#121214; --surface:#1C1C20;
+      --board-bg:#000000; --board-ink:#FFFFFF;
+      --ink:#EAEAEA; --sub:#ADB3BA; --sub-strong:#9CA2A9;
+      --border:#34353B; --rule:#2A2B31; --link:#7FA8FF;
+      --hl-warm:#221C15; --hl-blue:#141C28; --hl-green:#12211A;
+      --scroll-thumb:#3A3B42; --scroll-thumb-h:#4C4D55;
+      --sh-1:rgba(0,0,0,0.45); --sh-2:rgba(0,0,0,0.60);
+    }
+    /* semantic tokens — DARK (system default, unless user forced light) */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg:#121214; --surface:#1C1C20;
+        --board-bg:#000000; --board-ink:#FFFFFF;
+        --ink:#EAEAEA; --sub:#ADB3BA; --sub-strong:#9CA2A9;
+        --border:#34353B; --rule:#2A2B31; --link:#7FA8FF;
+        --hl-warm:#221C15; --hl-blue:#141C28; --hl-green:#12211A;
+        --scroll-thumb:#3A3B42; --scroll-thumb-h:#4C4D55;
+        --sh-1:rgba(0,0,0,0.45); --sh-2:rgba(0,0,0,0.60);
+      }
     }
 
     body {
-      background: var(--bg); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      color: var(--black); line-height: 1.35; -webkit-font-smoothing: antialiased;
+      background: var(--bg); font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      color: var(--ink); font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased;
       height: 100vh; height: 100svh; width: 100vw; overflow: hidden;
       display: flex; flex-direction: column; padding: 10px;
-      transition: background 1.2s ease;
+      transition: background-color .25s ease, color .25s ease;
     }
 
     #ambient { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
@@ -27,8 +64,8 @@
 
     .service-board {
       flex-shrink: 0; width: 100%; max-width: 1440px; margin: 0 auto 10px auto;
-      background: var(--black); color: var(--white);
-      border: 2px solid var(--black); box-shadow: 3px 3px 0 rgba(0,0,0,0.12);
+      background: var(--board-bg); color: var(--board-ink);
+      border: 2px solid var(--board-bg); box-shadow: 3px 3px 0 var(--sh-2);
       display: flex; align-items: center; gap: 12px; padding: 7px 12px; overflow: hidden;
     }
     .sb-live { display: flex; align-items: center; gap: 6px; flex-shrink: 0;
@@ -48,6 +85,11 @@
     .sb-msg .accent { color: var(--mta-yellow); font-weight: 800; }
     .sb-time { flex-shrink: 0; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.05em;
       color: var(--mta-gray); font-variant-numeric: tabular-nums; }
+    .theme-toggle { flex-shrink: 0; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; color: var(--mta-yellow); border: 1.5px solid var(--mta-yellow);
+      font-size: 0.95rem; line-height: 1; cursor: pointer; padding: 0; }
+    .theme-toggle:hover { background: var(--mta-yellow); color: var(--board-bg); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--mta-yellow); outline-offset: 2px; }
     @media (max-width: 560px) { .sb-time { display: none; } .sb-live span { display: none; } }
 
     .station-grid {
@@ -67,13 +109,15 @@
     .station.funding{grid-area:funding;} .station.honors{grid-area:honors;} .station.pubs{grid-area:pubs;}
 
     .station {
-      background: var(--white); min-height: 0; display: flex; flex-direction: column;
-      border-left: 6px solid var(--mta-gray); border-right: 2px solid var(--black);
-      border-top: 2px solid var(--black); border-bottom: 2px solid var(--black);
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.06); overflow: hidden;
+      background: var(--surface); min-height: 0; display: flex; flex-direction: column;
+      border-left: 6px solid var(--mta-gray); border-right: 2px solid var(--border);
+      border-top: 2px solid var(--border); border-bottom: 2px solid var(--border);
+      box-shadow: 3px 3px 0 var(--sh-1); overflow: hidden;
       transition: transform 0.14s ease, box-shadow 0.14s ease;
     }
-    .station:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 rgba(0,0,0,0.10); }
+    .station:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--sh-2); }
+    .station, .station-header, .service-board, .portal-btn, .highlight, .data-row {
+      transition: background-color .25s ease, border-color .25s ease, color .25s ease; }
 
     .station.line-red{border-left-color:var(--mta-red);} .station.line-blue{border-left-color:var(--mta-blue);}
     .station.line-green{border-left-color:var(--mta-green);} .station.line-orange{border-left-color:var(--mta-orange);}
@@ -82,14 +126,14 @@
     .station.line-brown{border-left-color:var(--mta-brown);} .station.line-light-green{border-left-color:var(--mta-light-green);}
 
     .station-header {
-      background: var(--black); padding: 7px 10px; display: flex; align-items: center; gap: 8px;
-      flex-shrink: 0; border-bottom: 1px solid var(--black);
+      background: var(--board-bg); padding: 7px 10px; display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0; border-bottom: 1px solid var(--board-bg);
     }
     .bullet {
       width: 22px; height: 22px; border-radius: 50%; background: var(--mta-gray);
       display: flex; align-items: center; justify-content: center; font-weight: 800;
-      font-size: 0.75rem; color: white; border: 2px solid var(--black);
-      box-shadow: 0 0 0 2px var(--white); flex-shrink: 0;
+      font-size: 0.75rem; color: white; border: 2px solid var(--border);
+      box-shadow: 0 0 0 2px var(--surface); flex-shrink: 0;
     }
     .bullet.red{background:var(--mta-red);} .bullet.blue{background:var(--mta-blue);}
     .bullet.green{background:var(--mta-green);} .bullet.orange{background:var(--mta-orange);}
@@ -99,40 +143,40 @@
     .station-title { font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; color: white; font-size: 0.85rem; }
 
     .station-content { padding: 9px 11px; flex: 1; overflow-y: auto; min-height: 0; }
-    .station-content, .data-row, .build-item { font-size: 0.85rem; }
-    .identity .station-content { font-size: 0.9rem; }
+    .station-content, .data-row, .build-item { font-size: 0.875rem; }
+    .identity .station-content { font-size: 0.925rem; }
 
     .station-content::-webkit-scrollbar { width: 6px; }
     .station-content::-webkit-scrollbar-track { background: transparent; }
-    .station-content::-webkit-scrollbar-thumb { background: #CBD0D5; border-radius: 3px; }
-    .station-content::-webkit-scrollbar-thumb:hover { background: #A7A9AC; }
+    .station-content::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 3px; }
+    .station-content::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-h); }
 
-    a { color: var(--mta-blue); text-decoration: none; font-weight: 600; border-bottom: 1px solid transparent; }
-    a:hover { border-bottom-color: var(--mta-blue); }
+    a { color: var(--link); text-decoration: none; font-weight: 600; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--link); }
     h1 { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 2px; line-height: 1.1; }
 
-    .data-row { display: flex; flex-direction: column; margin-bottom: 7px; border-bottom: 1px solid #E9ECEF; padding-bottom: 5px; }
+    .data-row { display: flex; flex-direction: column; margin-bottom: 7px; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
     .data-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .data-year { font-weight: 800; color: var(--mta-dark-gray); font-size: 0.68rem; }
-    .data-title { font-weight: 600; font-size: 0.82rem; }
-    .data-sub { font-size: 0.68rem; color: #5A6268; }
+    .data-year { font-weight: 800; color: var(--sub-strong); font-size: 0.72rem; }
+    .data-title { font-weight: 600; font-size: 0.86rem; }
+    .data-sub { font-size: 0.76rem; color: var(--sub); }
 
     .focus-line { border-left: 3px solid var(--mta-red); padding-left: 9px; margin: 4px 0 8px 0; }
-    .highlight { border-left: 3px solid var(--mta-red); background: #FFF9F0; padding: 6px 9px; margin: 7px 0; }
-    .highlight.blue { border-left-color: var(--mta-blue); background: #F2F5FC; }
-    .highlight.green { border-left-color: var(--mta-green); background: #F0FAF3; }
-    .micro { font-size: 0.66rem; color: #5A6268; }
+    .highlight { border-left: 3px solid var(--mta-red); background: var(--hl-warm); padding: 6px 9px; margin: 7px 0; }
+    .highlight.blue { border-left-color: var(--mta-blue); background: var(--hl-blue); }
+    .highlight.green { border-left-color: var(--mta-green); background: var(--hl-green); }
+    .micro { font-size: 0.76rem; color: var(--sub); }
 
     .build-item { margin-bottom: 9px; }
     .build-item:last-child { margin-bottom: 0; }
-    .build-tag { background: var(--black); color: white; font-size: 0.6rem; font-weight: 800; padding: 1px 5px; display: inline-block; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .04em; }
+    .build-tag { background: var(--board-bg); color: var(--board-ink); font-size: 0.6rem; font-weight: 800; padding: 1px 5px; display: inline-block; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .04em; }
 
     .button-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .portal-btn {
-      background: var(--white); border: 1.5px solid var(--black); padding: 3px 8px; font-weight: 700; font-size: 0.64rem;
-      text-transform: uppercase; color: var(--black); box-shadow: 1px 1px 0 var(--black); display: inline-flex; align-items: center; gap: 4px;
+      background: var(--surface); border: 1.5px solid var(--border); padding: 3px 8px; font-weight: 700; font-size: 0.64rem;
+      text-transform: uppercase; color: var(--ink); box-shadow: 1px 1px 0 var(--border); display: inline-flex; align-items: center; gap: 4px;
     }
-    .portal-btn:hover { background: var(--mta-yellow); transform: translate(-1px,-1px); }
+    .portal-btn:hover { background: var(--mta-yellow); color: #111; transform: translate(-1px,-1px); }
 
     @media (max-width: 900px), (max-height: 650px) {
       body { height: auto; overflow-y: auto; display: block; }
@@ -187,6 +231,7 @@
   <span class="sb-live"><span class="sb-dot live" id="sbDot"></span><span>Service</span></span>
   <span class="sb-msg" id="sbMsg">Checking the board&hellip;</span>
   <span class="sb-time" id="sbTime"></span>
+  <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch color theme" aria-pressed="false" title="Toggle light / dark">☾</button>
 </div>
 
 <div class="station-grid">
@@ -315,17 +360,17 @@
     <div class="station-header"><div class="bullet orange">D</div><span class="station-title">Dev</span></div>
     <div class="station-content">
       <div class="build-item">
-        <div class="build-tag">Vibe Coded Anki Add-on</div>
+        <div class="build-tag">Anki Add-on</div>
         <strong><a href="https://ankiweb.net/shared/info/897423548">microbatch</a></strong><br>
         <span>Ten cards at a time, so a long backlog finally has a finish line.</span>
       </div>
       <div class="build-item">
-        <div class="build-tag">Vibe Coded Anki Add-on</div>
+        <div class="build-tag">Anki Add-on</div>
         <strong><a href="https://ankiweb.net/shared/info/1985468740">Passive Reviewer</a></strong><br>
         <span>A fifth grading button: reschedule a card and move on.</span>
       </div>
       <div class="build-item">
-        <div class="build-tag">Vibe Coded Webpage</div>
+        <div class="build-tag">Webpage</div>
         <strong><a href="https://cortriatriatum.github.io/lifeinweeks/#y=1990&le=73&s=avg&u=w&h=0&l=en">Life in Weeks Calendar</a></strong><br>
         <span>Visualize your life in weeks lived.</span>
       </div>
@@ -574,6 +619,32 @@
       (row.querySelector('.data-title') || row).appendChild(btn);
     });
   }
+})();
+</script>
+<script>
+(function(){
+  var root = document.documentElement, btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  function systemDark(){ try { return matchMedia('(prefers-color-scheme: dark)').matches; } catch(e){ return false; } }
+  function current(){ return root.getAttribute('data-theme') || (systemDark() ? 'dark' : 'light'); }
+  function sync(){
+    var dark = current() === 'dark';
+    btn.textContent = dark ? '\u2600' : '\u263E';               /* sun when dark, moon when light */
+    btn.setAttribute('aria-pressed', String(dark));
+    btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  }
+  btn.addEventListener('click', function(){
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch(e){}
+    sync();
+  });
+  try {
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){
+      if (!root.getAttribute('data-theme')) sync();   /* follow system only if user hasn't chosen */
+    });
+  } catch(e){}
+  sync();
 })();
 </script>
 </body>
