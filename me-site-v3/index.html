@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rick Mathews, PhD</title>
+  <meta name="description" content="Rick Mathews. Biomedical engineer and Physician-Scientist in training at the Oregon Health & Science University.">
+  <link rel="canonical" href="https://cortriatriatum.github.io/me/">
+
+  <!-- Link previews (LinkedIn, iMessage, Slack, email clients, X, Facebook). Image URLs must be absolute. -->
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="Rick Mathews, PhD">
+  <meta property="og:title" content="Rick Mathews, PhD">
+  <meta property="og:description" content="Physician-Scientist in training (MD/PhD) at Oregon Health &amp; Science University. Building the missing developmental baseline for coarctation of the aorta.">
+  <meta property="og:url" content="https://cortriatriatum.github.io/me/">
+  <meta property="og:image" content="https://cortriatriatum.github.io/me/img/share.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Rick Mathews, PhD. Physician-Scientist in Training, MD/PhD, Oregon Health &amp; Science University.">
+  <meta property="profile:first_name" content="Rick">
+  <meta property="profile:last_name" content="Mathews">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rick Mathews, PhD">
+  <meta name="twitter:description" content="Physician-Scientist in training (MD/PhD) at Oregon Health &amp; Science University. Building the missing developmental baseline for coarctation of the aorta.">
+  <meta name="twitter:image" content="https://cortriatriatum.github.io/me/img/share.jpg">
+  <meta name="twitter:image:alt" content="Rick Mathews, PhD. Physician-Scientist in Training, MD/PhD, Oregon Health &amp; Science University.">
+  <script>
+    /* apply saved theme before first paint to avoid a flash; localStorage may be blocked in some embeds */
+    try { var _t = localStorage.getItem('theme'); if (_t === 'dark' || _t === 'light') document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      /* MTA accent palette — fixed in both themes */
+      --mta-red:#EE352E; --mta-blue:#0039A6; --mta-green:#00933C; --mta-orange:#FF6319;
+      --mta-yellow:#FCCC0A; --mta-purple:#B933AD; --mta-gray:#A7A9AC; --mta-dark-gray:#63666A;
+      --mta-brown:#996633; --mta-light-green:#6CBE45;
+      --black:#111; --white:#FFF;
+
+      /* semantic tokens — LIGHT (default) */
+      --bg:#EDEEF0; --surface:#FFFFFF;
+      --board-bg:#111111; --board-ink:#FFFFFF;
+      --ink:#14161A; --sub:#4C525A; --sub-strong:#52565B;
+      --border:#111111; --rule:#E4E7EA; --link:#0039A6;
+      --hl-warm:#FFF9F0; --hl-blue:#F2F5FC; --hl-green:#F0FAF3;
+      --scroll-thumb:#CBD0D5; --scroll-thumb-h:#A7A9AC;
+      --sh-1:rgba(0,0,0,0.06); --sh-2:rgba(0,0,0,0.12);
+    }
+
+    /* semantic tokens — DARK (explicit choice) */
+    :root[data-theme="dark"] {
+      --bg:#121214; --surface:#1C1C20;
+      --board-bg:#000000; --board-ink:#FFFFFF;
+      --ink:#EAEAEA; --sub:#ADB3BA; --sub-strong:#9CA2A9;
+      --border:#34353B; --rule:#2A2B31; --link:#7FA8FF;
+      --hl-warm:#221C15; --hl-blue:#141C28; --hl-green:#12211A;
+      --scroll-thumb:#3A3B42; --scroll-thumb-h:#4C4D55;
+      --sh-1:rgba(0,0,0,0.45); --sh-2:rgba(0,0,0,0.60);
+    }
+    /* semantic tokens — DARK (system default, unless user forced light) */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg:#121214; --surface:#1C1C20;
+        --board-bg:#000000; --board-ink:#FFFFFF;
+        --ink:#EAEAEA; --sub:#ADB3BA; --sub-strong:#9CA2A9;
+        --border:#34353B; --rule:#2A2B31; --link:#7FA8FF;
+        --hl-warm:#221C15; --hl-blue:#141C28; --hl-green:#12211A;
+        --scroll-thumb:#3A3B42; --scroll-thumb-h:#4C4D55;
+        --sh-1:rgba(0,0,0,0.45); --sh-2:rgba(0,0,0,0.60);
+      }
+    }
+
+    body {
+      background: var(--bg); font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+      color: var(--ink); font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased;
+      height: 100vh; height: 100svh; width: 100vw; overflow: hidden;
+      display: flex; flex-direction: column; padding: 10px;
+      transition: background-color .25s ease, color .25s ease;
+    }
+
+    #ambient { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+    .service-board, .station-grid { position: relative; z-index: 1; }
+
+    .service-board {
+      flex-shrink: 0; width: 100%; max-width: 1440px; margin: 0 auto 10px auto;
+      background: var(--board-bg); color: var(--board-ink);
+      border: 2px solid var(--board-bg); box-shadow: 3px 3px 0 var(--sh-2);
+      display: flex; align-items: center; gap: 12px; padding: 7px 12px; overflow: hidden;
+    }
+    .sb-live { display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+      font-weight: 800; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mta-yellow); }
+    .sb-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mta-green); }
+    .sb-dot.advisory { background: var(--mta-yellow); }
+    .sb-dot.live { animation: pulse 2.6s infinite; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0,147,60,0.55); }
+      70% { box-shadow: 0 0 0 7px rgba(0,147,60,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,147,60,0); }
+    }
+    .sb-msg { flex: 1; min-width: 0; font-weight: 600; font-size: 0.8rem; letter-spacing: 0.01em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: opacity 0.35s ease, transform 0.35s ease; }
+    .sb-msg.swap { opacity: 0; transform: translateY(-6px); }
+    .sb-msg .accent { color: var(--mta-yellow); font-weight: 800; }
+    .sb-time { flex-shrink: 0; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.05em;
+      color: var(--mta-gray); font-variant-numeric: tabular-nums; }
+    .theme-toggle { flex-shrink: 0; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; color: var(--mta-yellow); border: 1.5px solid var(--mta-yellow);
+      font-size: 0.95rem; line-height: 1; cursor: pointer; padding: 0; }
+    .theme-toggle:hover { background: var(--mta-yellow); color: var(--board-bg); }
+    .theme-toggle:focus-visible { outline: 2px solid var(--mta-yellow); outline-offset: 2px; }
+    @media (max-width: 560px) { .sb-time { display: none; } .sb-live span { display: none; } }
+
+    .station-grid {
+      flex: 1; min-height: 0; width: 100%; max-width: 1440px; margin: 0 auto;
+      display: grid; gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      grid-template-areas:
+        "identity   focus       pubs"
+        "education  funding     honors"
+        "experience community   side";
+    }
+
+    .station.identity{grid-area:identity;} .station.focus{grid-area:focus;}
+    .station.side{grid-area:side;} .station.education{grid-area:education;}
+    .station.experience{grid-area:experience;} .station.community{grid-area:community;}
+    .station.funding{grid-area:funding;} .station.honors{grid-area:honors;} .station.pubs{grid-area:pubs;}
+
+    .station {
+      background: var(--surface); min-height: 0; display: flex; flex-direction: column;
+      border-left: 6px solid var(--mta-gray); border-right: 2px solid var(--border);
+      border-top: 2px solid var(--border); border-bottom: 2px solid var(--border);
+      box-shadow: 3px 3px 0 var(--sh-1); overflow: hidden;
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    }
+    .station:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--sh-2); }
+    .station, .station-header, .service-board, .portal-btn, .highlight, .data-row {
+      transition: background-color .25s ease, border-color .25s ease, color .25s ease; }
+
+    .station.line-red{border-left-color:var(--mta-red);} .station.line-blue{border-left-color:var(--mta-blue);}
+    .station.line-green{border-left-color:var(--mta-green);} .station.line-orange{border-left-color:var(--mta-orange);}
+    .station.line-purple{border-left-color:var(--mta-purple);} .station.line-dark{border-left-color:var(--mta-dark-gray);}
+    .station.line-yellow{border-left-color:var(--mta-yellow);} .station.line-gray{border-left-color:var(--mta-gray);}
+    .station.line-brown{border-left-color:var(--mta-brown);} .station.line-light-green{border-left-color:var(--mta-light-green);}
+
+    .station-header {
+      background: var(--board-bg); padding: 7px 10px; display: flex; align-items: center; gap: 8px;
+      flex-shrink: 0; border-bottom: 1px solid var(--board-bg);
+    }
+    .bullet {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--mta-gray);
+      display: flex; align-items: center; justify-content: center; font-weight: 800;
+      font-size: 0.75rem; color: white; border: 2px solid var(--border);
+      box-shadow: 0 0 0 2px var(--surface); flex-shrink: 0;
+    }
+    .bullet.red{background:var(--mta-red);} .bullet.blue{background:var(--mta-blue);}
+    .bullet.green{background:var(--mta-green);} .bullet.orange{background:var(--mta-orange);}
+    .bullet.purple{background:var(--mta-purple);} .bullet.gray{background:var(--mta-gray);}
+    .bullet.yellow{background:var(--mta-yellow); color:var(--black);}
+    .bullet.brown{background:var(--mta-brown);} .bullet.light-green{background:var(--mta-light-green);}
+    .station-title { font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; color: white; font-size: 0.85rem; }
+
+    .station-content { padding: 9px 11px; flex: 1; overflow-y: auto; min-height: 0; }
+    .station-content, .data-row, .build-item { font-size: 0.875rem; }
+    .identity .station-content { font-size: 0.925rem; }
+
+    /* Bio portrait: MTA-bullet style ring (orange line color, surface gap, dark outline) */
+    .bio-head { display: flex; align-items: center; gap: 12px; }
+    .bio-head > div { min-width: 0; }
+    .avatar {
+      position: relative; flex-shrink: 0; width: 84px; height: 84px; border-radius: 50%;
+      overflow: hidden; padding: 0; cursor: pointer; background: var(--rule);
+      border: 3px solid var(--mta-orange); box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--border);
+      margin: 4px;
+    }
+    .avatar:focus-visible { outline: 2px solid var(--mta-yellow); outline-offset: 5px; }
+    .avatar img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+      opacity: 0; transition: opacity 0.9s ease;
+    }
+    .avatar img.on { opacity: 1; }
+    @media (max-height: 760px) and (min-width: 901px) { .avatar { width: 64px; height: 64px; } }
+    @media (prefers-reduced-motion: reduce) { .avatar img { transition: none; } }
+
+    .station-content::-webkit-scrollbar { width: 6px; }
+    .station-content::-webkit-scrollbar-track { background: transparent; }
+    .station-content::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 3px; }
+    .station-content::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-h); }
+
+    a { color: var(--link); text-decoration: none; font-weight: 600; border-bottom: 1px solid transparent; }
+    a:hover { border-bottom-color: var(--link); }
+    h1 { font-size: 1.45rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 2px; line-height: 1.1; }
+
+    .data-row { display: flex; flex-direction: column; margin-bottom: 7px; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+    .data-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .data-year { font-weight: 800; color: var(--sub-strong); font-size: 0.72rem; }
+    .data-title { font-weight: 600; font-size: 0.86rem; }
+    .data-sub { font-size: 0.76rem; color: var(--sub); }
+    .pub-sec { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink);
+      border-bottom: 2px solid var(--border); padding-bottom: 3px; margin: 12px 0 7px; }
+    .pub-sec:first-child { margin-top: 0; }
+    .pub-sec span { color: var(--sub); font-weight: 700; }
+    .fa { display: inline-block; margin-left: 6px; background: var(--board-bg); color: var(--board-ink); font-size: 0.56rem;
+      font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 0 4px; vertical-align: 1px; }
+
+    .focus-line { border-left: 3px solid var(--mta-red); padding-left: 9px; margin: 4px 0 8px 0; }
+    .highlight { border-left: 3px solid var(--mta-red); background: var(--hl-warm); padding: 6px 9px; margin: 7px 0; }
+    .highlight.blue { border-left-color: var(--mta-blue); background: var(--hl-blue); }
+    .highlight.green { border-left-color: var(--mta-green); background: var(--hl-green); }
+    .micro { font-size: 0.76rem; color: var(--sub); }
+
+    .build-item { margin-bottom: 9px; }
+    .build-item:last-child { margin-bottom: 0; }
+    .build-tag { background: var(--board-bg); color: var(--board-ink); font-size: 0.6rem; font-weight: 800; padding: 1px 5px; display: inline-block; margin-bottom: 3px; text-transform: uppercase; letter-spacing: .04em; }
+
+    .button-group { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .portal-btn {
+      background: var(--surface); border: 1.5px solid var(--border); padding: 3px 8px; font-weight: 700; font-size: 0.64rem;
+      text-transform: uppercase; color: var(--ink); box-shadow: 1px 1px 0 var(--border); display: inline-flex; align-items: center; gap: 4px;
+    }
+    .portal-btn:hover { background: var(--mta-yellow); color: #111; transform: translate(-1px,-1px); }
+    button.portal-btn { font-family: inherit; cursor: pointer; }
+    .portal-btn[hidden] { display: none; }
+    /* primary actions: inverted (board colors) so Email / CV / Biosketch read first */
+    .portal-btn.key { background: var(--board-bg); color: var(--board-ink); border-color: var(--board-bg); box-shadow: 1px 1px 0 var(--mta-yellow); }
+    .portal-btn.key:hover { background: var(--mta-yellow); color: #111; border-color: #111; }
+    :root[data-theme="dark"] .portal-btn.key { border-color: var(--mta-yellow); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .portal-btn.key { border-color: var(--mta-yellow); } }
+    .button-group.primary + .button-group { margin-top: 6px; }
+
+    /* Laptop fit: grid mode only (>900px wide, >650px tall). Tighten Bio so every button stays visible
+       without scrolling the card down to 1280x720; below ~760px tall the subtitle and portrait shrink. */
+    @media (min-width: 901px) and (min-height: 651px) {
+      .identity .station-content { padding: 8px 10px; }
+      .identity .button-group { gap: 5px; margin-top: 7px; }
+      .identity .portal-btn { padding: 2px 7px; font-size: 0.62rem; }
+    }
+    @media (min-width: 901px) and (min-height: 651px) and (max-height: 820px) {
+      .identity h1 { font-size: 1.3rem; }
+      .identity .bio-sub { font-size: 0.82rem; line-height: 1.35; }
+      .identity .bio-loc { margin-top: 2px; }
+      .identity .button-group { margin-top: 6px; }
+      .button-group.primary + .button-group { margin-top: 5px; }
+    }
+    @media (min-width: 901px) and (max-width: 1180px) and (min-height: 651px) {
+      .identity .bio-sub { font-size: 0.78rem; line-height: 1.3; }
+      .identity h1 { font-size: 1.15rem; }
+      .identity .bio-head { gap: 9px; }
+      .identity .avatar { width: 58px; height: 58px; margin: 3px; }
+      .identity .bio-loc { margin-top: 1px; }
+      .identity .portal-btn { padding: 2px 6px; font-size: 0.6rem; }
+      .identity .button-group { gap: 4px; margin-top: 6px; }
+      .button-group.primary + .button-group { margin-top: 4px; }
+    }
+
+    /* Contact dialog */
+    .contact { margin: auto; max-height: calc(100svh - 32px); overflow: auto; border: 2px solid var(--border); border-left: 6px solid var(--mta-orange); padding: 0; width: min(440px, calc(100vw - 32px));
+      background: var(--surface); color: var(--ink); box-shadow: 5px 5px 0 var(--sh-2); }
+    .contact::backdrop { background: rgba(0,0,0,0.45); }
+    .contact .station-header { justify-content: space-between; }
+    .contact form { padding: 12px 14px 14px; display: grid; gap: 9px; }
+    .contact label { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sub-strong); display: grid; gap: 3px; }
+    .contact input, .contact textarea { font: inherit; font-size: 0.9rem; color: var(--ink); background: var(--bg);
+      border: 1.5px solid var(--border); padding: 7px 8px; border-radius: 0; width: 100%; }
+    .contact textarea { min-height: 110px; resize: vertical; }
+    .contact input:focus-visible, .contact textarea:focus-visible { outline: 2px solid var(--mta-yellow); outline-offset: 1px; }
+    .contact .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .contact .row { display: flex; align-items: center; gap: 10px; }
+    .contact .send { font-family: inherit; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+      background: var(--mta-yellow); color: #111; border: 1.5px solid #111; box-shadow: 2px 2px 0 #111; padding: 6px 14px; cursor: pointer; }
+    .contact .send:disabled { opacity: 0.6; cursor: wait; }
+    .contact .status { font-size: 0.78rem; color: var(--sub); }
+    .contact .close { background: transparent; border: 1.5px solid var(--mta-gray); color: var(--board-ink); width: 24px; height: 24px; cursor: pointer; font-size: 0.9rem; line-height: 1; }
+    .contact .fine { font-size: 0.68rem; color: var(--sub); }
+
+    @media (max-width: 900px), (max-height: 650px) {
+      body { height: auto; overflow-y: auto; display: block; }
+      .service-board { margin-bottom: 8px; align-items: flex-start; }
+      .sb-msg { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .sb-live, .sb-time { padding-top: 1px; }
+      .station-grid { display: flex; flex-direction: column; }
+      .station { min-height: auto; overflow: visible; margin-bottom: 4px; }
+      .station:hover { transform: none; }
+      .station-content { overflow-y: visible; }
+      .station-header { position: sticky; top: 0; z-index: 2; box-shadow: 0 4px 6px -4px rgba(0,0,0,0.3); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sb-dot.live { animation: none; }
+      .sb-msg { transition: none; }
+      .station { transition: none; }
+    }
+    .station-tag {
+      margin-left: auto; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--mta-gray); white-space: nowrap; opacity: 0.8;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .station-tag.swap { opacity: 0; transform: translateY(-4px); }
+    @media (max-width: 600px) { .station-tag { display: none; } }
+
+    .cite-btn {
+      display: inline-block; margin-top: 4px; font-family: inherit; font-size: 0.58rem;
+      font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--black);
+      background: var(--mta-yellow); border: 1px solid var(--black); padding: 1px 7px;
+      cursor: pointer; box-shadow: 1px 1px 0 var(--black);
+    }
+    .cite-btn:hover { transform: translate(-1px,-1px); box-shadow: 2px 2px 0 var(--black); }
+    .cite-btn:active { transform: translate(0,0); box-shadow: 0 0 0 var(--black); }
+
+    .toast {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--black); color: #fff; padding: 8px 14px; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.04em; box-shadow: 3px 3px 0 rgba(0,0,0,0.25); opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease; z-index: 60; display: flex; align-items: center; gap: 8px;
+    }
+    .toast .tdot { width: 8px; height: 8px; border-radius: 50%; background: var(--mta-green); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (prefers-reduced-motion: reduce) { .station-tag, .cite-btn, .toast { transition: none; } }
+  </style>
+</head>
+<body>
+
+<canvas id="ambient" aria-hidden="true"></canvas>
+
+<div class="service-board" role="status" aria-live="polite">
+  <span class="sb-live"><span class="sb-dot live" id="sbDot"></span><span>Service</span></span>
+  <span class="sb-msg" id="sbMsg">Checking the board&hellip;</span>
+  <span class="sb-time" id="sbTime"></span>
+  <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch color theme" aria-pressed="false" title="Toggle light / dark">☾</button>
+</div>
+
+<div class="station-grid">
+
+  <!-- 0 IDENTITY (Bio) -->
+  <div class="station line-orange identity">
+    <div class="station-header"><div class="bullet orange">B</div><span class="station-title">Bio</span></div>
+    <div class="station-content">
+      <div class="bio-head">
+        <button class="avatar" id="avatar" type="button" aria-label="Show next photo of Rick Mathews">
+          <img class="on" src="img/rick-1.webp" alt="Rick Mathews" width="84" height="84" decoding="async" fetchpriority="high">
+          <img data-src="img/rick-2.webp" alt="" width="84" height="84" decoding="async">
+          <img data-src="img/rick-3.webp" alt="" width="84" height="84" decoding="async">
+        </button>
+        <div>
+          <h1>Rick Mathews, PhD</h1>
+          <div class="bio-sub">Physician-Scientist in Training at the <a href="https://www.ohsu.edu/">Oregon Health &amp; Science University</a> <a href="https://www.ohsu.edu/school-of-medicine/md-phd-program/rick-mathews-phd">Medical Scientist Training Program</a></div>
+          <div class="bio-loc" style="font-size:0.7rem;color:var(--sub);margin-top:4px;">Portland, Oregon</div>
+        </div>
+      </div>
+      <div class="button-group primary">
+        <button type="button" class="portal-btn key" id="contactBtn" hidden>✉ Email</button>
+        <a href="docs/MathewsRick_CV.pdf" class="portal-btn key" target="_blank" rel="noopener">📄 CV</a>
+        <a href="docs/MathewsRick_Biosketch.pdf" class="portal-btn key" target="_blank" rel="noopener">📄 NIH Biosketch</a>
+      </div>
+      <div class="button-group">
+        <a href="https://www.ohsu.edu/people/rick-mathews-phd" class="portal-btn">🏥 OHSU</a>
+        <a href="https://www.linkedin.com/in/mathewsrick/" class="portal-btn">🔗 LinkedIn</a>
+        <a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ" class="portal-btn">📄 Scholar</a>
+        <a href="https://orcid.org/0000-0003-2723-5646" class="portal-btn">🔗 ORCID</a>
+        <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/" class="portal-btn">📄 PubMed</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1 CURRENT FOCUS -->
+  <div class="station line-blue focus">
+    <div class="station-header"><div class="bullet blue">C</div><span class="station-title">Current Research Focus</span></div>
+    <div class="station-content">
+      <div class="focus-line">
+        <strong>No cause. No cure. <span style="color:var(--mta-red);">No map.</span></strong><br>
+        Building the missing developmental baseline for coarctation of the aorta.
+      </div>
+      <div class="highlight">
+        <strong>Funded, 2026 to 2027</strong><br>
+        <a href="https://ohsufoundation.org/community-programs/friends-of-doernbecher/">Friends of Doernbecher Grant</a><br>
+        <span class="micro">Mapping coarctation anatomy. <a href="https://www.ohsu.edu/">OHSU</a> <a href="https://www.ohsu.edu/doernbecher">Doernbecher Children's Hospital</a>.</span>
+      </div>
+      <div class="highlight green">
+        <strong>ResearchSquare Preprint, 2026</strong><br>
+        <a href="https://pubmed.ncbi.nlm.nih.gov/42427849/">Heterochronic Expression of TFAP2β in Coarctation of the Aorta</a><br>
+        <span class="micro">Mathews R, et al. Preprint. Res Sq. 2026;rs.3.rs-10021035. Published 2026 Jun 30.</span>
+      </div>
+      <div class="highlight blue">
+        <strong>AJP &ndash; Heart and Circulatory Physiology, 2026</strong><br>
+        <a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><br>
+        <span class="micro">Mathews R, et al. Volume 330, issue 3, pages H869 to H873.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 PUBLICATIONS (all 20 Google Scholar entries, verified against Crossref / publisher, Oct 2026) -->
+  <div class="station line-orange pubs">
+    <div class="station-header"><div class="bullet orange">M</div><span class="station-title">Manuscripts &amp; Publications</span></div>
+    <div class="station-content">
+      <div class="pub-sec">Journal articles <span>(13)</span></div>
+      <div class="data-row"><div class="data-year">2026 <span class="fa">First author</span></div><div class="data-title"><a href="https://doi.org/10.1152/ajpheart.00741.2025">Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta</a><div class="data-sub">American Journal of Physiology &ndash; Heart and Circulatory Physiology, volume 330, issue 3</div></div></div>
+      <div class="data-row"><div class="data-year">2025</div><div class="data-title"><a href="https://doi.org/10.1080/10428194.2024.2405874">Thromboprophylaxis with intermediate dose enoxaparin during asparaginase containing induction for young adults with acute lymphoblastic leukemia</a><div class="data-sub">Leukemia &amp; Lymphoma, volume 66, issue 1</div></div></div>
+      <div class="data-row"><div class="data-year">2024 <span class="fa">First author</span></div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/39393311/">Adenosine monophosphate dependent protein kinase regulates endothelial heparan sulfate expression in response to an inflammatory stimulus under arterial shear stress</a><div class="data-sub">Biochemical and Biophysical Research Communications, volume 735</div></div></div>
+      <div class="data-row"><div class="data-year">2024 <span class="fa">First author</span></div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38359323/">Venous thromboembolism: diagnostic advances and unaddressed challenges in management</a><div class="data-sub">Current Opinion in Hematology, volume 31, issue 3</div></div></div>
+      <div class="data-row"><div class="data-year">2024 <span class="fa">First author</span></div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/38099327/">Role of platelet count in a murine stasis model of deep vein thrombosis</a><div class="data-sub">Platelets, volume 35, issue 1</div></div></div>
+      <div class="data-row"><div class="data-year">2024</div><div class="data-title"><a href="https://doi.org/10.1111/ejh.14146">Comparison of bleeding and thrombotic outcomes in veno-venous extracorporeal membrane oxygenation: heparin versus bivalirudin</a><div class="data-sub">European Journal of Haematology, volume 112, issue 4</div></div></div>
+      <div class="data-row"><div class="data-year">2023</div><div class="data-title"><a href="https://doi.org/10.1111/ejh.14061">Estrogen-based hormonal therapy and the risk of thrombosis in COVID-19 patients</a><div class="data-sub">European Journal of Haematology, volume 111, issue 5</div></div></div>
+      <div class="data-row"><div class="data-year">2023</div><div class="data-title"><a href="https://doi.org/10.1111/ejh.13963">Clinical outcomes of patients referred for asymptomatic neutropenia: a focus on racial disparities in hematology</a><div class="data-sub">European Journal of Haematology, volume 111, issue 1</div></div></div>
+      <div class="data-row"><div class="data-year">2022 <span class="fa">First author</span></div><div class="data-title"><a href="https://www.facs.org/for-medical-professionals/news-publications/journals/case-reviews/issues/v3n7/muralidaran-atrial-appendage-tissue/">Atrial appendage tissue as autologous vascular conduit in pediatric cardiac surgery</a><div class="data-sub">ACS Case Reviews in Surgery, volume 3, issue 7 (case report)</div></div></div>
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://doi.org/10.1115/1.4051765">In vitro flow chamber design for the study of endothelial cell (patho)physiology</a><div class="data-sub">Journal of Biomechanical Engineering, volume 144, issue 2 (review)</div></div></div>
+      <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/34059731/">Heparan sulfate proteoglycan glypican-1 and platelet endothelial cell adhesion molecule 1 cooperate in shear-induced endothelial nitric oxide production</a><div class="data-sub">Scientific Reports, volume 11</div></div></div>
+      <div class="data-row"><div class="data-year">2021</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/32647868/">The glycocalyx core protein glypican-1 protects vessel wall endothelial cells from stiffness-mediated dysfunction and disease</a><div class="data-sub">Cardiovascular Research, volume 117, issue 6</div></div></div>
+      <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://pubmed.ncbi.nlm.nih.gov/28700908/">Endothelial glycocalyx-mediated nitric oxide production in response to selective atomic force microscopy pulling</a><div class="data-sub">Biophysical Journal, volume 113, issue 1</div></div></div>
+      <div class="pub-sec">Preprints <span>(2)</span></div>
+      <div class="data-row"><div class="data-year">2026 <span class="fa">First author</span></div><div class="data-title"><a href="https://www.researchsquare.com/article/rs-10021035/v1">Heterochronic Expression of TFAP2β in Coarctation of the Aorta</a><div class="data-sub">Research Square</div></div></div>
+      <div class="data-row"><div class="data-year">2023</div><div class="data-title"><a href="https://doi.org/10.2139/ssrn.4395597">Real-world comparison of bleeding and thrombotic outcomes in V-V ECMO: heparin versus bivalirudin</a><div class="data-sub">SSRN. Preprint of the 2024 European Journal of Haematology article</div></div></div>
+      <div class="pub-sec">Book chapter <span>(1)</span></div>
+      <div class="data-row"><div class="data-year">2023</div><div class="data-title"><a href="https://doi.org/10.1016/b978-0-323-90610-4.00013-6">Assessment tools and wound documentation for patients with chronic venous insufficiency</a><div class="data-sub">In: Venous Ulcers. Elsevier, pages 179 to 197</div></div></div>
+      <div class="pub-sec">Conference abstracts <span>(4)</span></div>
+      <div class="data-row"><div class="data-year">2024 <span class="fa">First author</span></div><div class="data-title"><a href="https://doi.org/10.1161/circ.150.suppl_1.4148019">Shear stress affects human aortic endothelial heparan sulfate expression response to inflammatory stimulus</a><div class="data-sub">Circulation, volume 150, supplement 1</div></div></div>
+      <div class="data-row"><div class="data-year">2023</div><div class="data-title"><a href="https://doi.org/10.1182/blood-2023-191092">Multimodality quantification of thrombus deposition in extracorporeal membrane oxygenation (ECMO); correlating oxygenator computed tomography imaging, electron microscopy and histology to clinical outcomes</a><div class="data-sub">Blood, volume 142, supplement 1</div></div></div>
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title"><a href="https://doi.org/10.1182/blood-2022-170582">Use of hormonal therapy increases the risk of venous thrombosis in COVID-19 patients; results of 1071 patient cohort</a><div class="data-sub">Blood, volume 140, supplement 1</div></div></div>
+      <div class="data-row"><div class="data-year">2017</div><div class="data-title"><a href="https://doi.org/10.1016/j.bpj.2016.11.1685">The short term response of PECAM-1 to mechanical loading: cyclooxygenase-2 and nitric oxide production with AFM pulling and shear stress</a><div class="data-sub">Biophysical Journal, volume 112, issue 3</div></div></div>
+      <div class="data-row" style="border:none;"><div class="data-year">All</div><div class="data-title">Complete list<div class="data-sub"><a href="https://scholar.google.com/citations?user=uRJdT64AAAAJ">Google Scholar</a> · <a href="https://orcid.org/0000-0003-2723-5646">ORCID</a> · <a href="https://www.ncbi.nlm.nih.gov/myncbi/rick.mathews.1/bibliography/public/">PubMed</a></div></div></div>
+    </div>
+  </div>
+  <!-- 3 EDUCATION -->
+  <div class="station line-blue education">
+    <div class="station-header"><div class="bullet blue">E</div><span class="station-title">Education</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2018 to Present</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/md-program">Doctor of Medicine</a><div class="data-sub"><a href="https://www.ohsu.edu/">Oregon Health &amp; Science University</a></div></div></div>
+      <div class="data-row"><div class="data-year">2020 to 2024</div><div class="data-title"><a href="https://www.ohsu.edu/school-of-medicine/biomedical-engineering">Doctor of Philosophy, Biomedical Engineering</a><div class="data-sub"><a href="https://www.ohsu.edu/">Oregon Health &amp; Science University</a></div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title"><a href="https://www.ccny.cuny.edu/bme">Bachelor of Engineering, Biomedical Engineering</a><div class="data-sub"><a href="https://www.ccny.cuny.edu/">City College of New York</a>, <a href="https://www.ccny.cuny.edu/engineering">Grove School of Engineering</a>, <a href="https://macaulay.cuny.edu">Macaulay Honors College</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- 4 FUNDING -->
+  <div class="station line-yellow funding">
+    <div class="station-header"><div class="bullet yellow">R</div><span class="station-title">Research Funding</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2026 to 2027</div><div class="data-title"><a href="https://ohsufoundation.org/community-programs/friends-of-doernbecher/">Friends of Doernbecher Grant</a><div class="data-sub"><a href="https://www.ohsu.edu/">OHSU</a> <a href="https://www.ohsu.edu/doernbecher">Doernbecher Children's Hospital</a></div></div></div>
+      <div class="data-row"><div class="data-year">2022 to 2026</div><div class="data-title"><a href="https://reporter.nih.gov/search/8vWhhl7XrkWNEWflMzs6Gw/project-details/11127691">Ruth L. Kirschstein NRSA (F30HL163918)</a><div class="data-sub"><a href="https://www.nhlbi.nih.gov/">National Heart, Lung, and Blood Institute</a></div></div></div>
+      <div class="data-row"><div class="data-year">2023 to 2024</div><div class="data-title"><a href="https://www.ohsu.edu/octri/your-path-funding-starts-here">N.L. Tartar Trust Award</a><div class="data-sub">OHSU School of Medicine</div></div></div>
+      <div class="data-row"><div class="data-year">2020 to 2022</div><div class="data-title"><a href="https://reporter.nih.gov/search/Cd43ae-apEm3oefS-2kcTg/project-details/11190899">Multidisciplinary Research Training in Pulmonary &amp; Critical Care Medicine (T32HL083808)</a> <div class="data-sub"><a href="https://www.nhlbi.nih.gov/">National Heart, Lung, and Blood Institute</a></div></div></div>
+      <div class="data-row"><div class="data-year">2018 to 2020</div><div class="data-title"><a href="https://reporter.nih.gov/search/QvF9r0qDIE-M10wnqa71jw/project-details/9073169">Medical Scientist Training Program (T32GM109835)</a><div class="data-sub"><a href="https://www.nigms.nih.gov/">National Institute of General Medical Sciences</a></div></div></div>
+      <div class="data-row"><div class="data-year">2017</div><div class="data-title">Seymour A. Seiler Undergraduate Research Fund Award<div class="data-sub"><a href="https://macaulay.cuny.edu">Macaulay Honors College</a></div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title">Full Tuition Scholarship<div class="data-sub"><a href="https://macaulay.cuny.edu">Macaulay Honors College</a>, <a href="https://www.ccny.cuny.edu/">City College of New York</a></div></div></div>
+      <div class="data-row"><div class="data-year">2015</div><div class="data-title">Grant for Undergraduate Research in Biomedical Engineering<div class="data-sub"><a href="https://thenytrust.org/">The New York Community Trust</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- 5 HONORS -->
+  <div class="station line-blue honors">
+    <div class="station-header"><div class="bullet blue">A</div><span class="station-title">Awards</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2026</div><div class="data-title">Member, <a href="https://www.alphaomegaalpha.org/">Alpha Omega Alpha</a><div class="data-sub">National Medical Honor Society</div></div></div>
+      <div class="data-row"><div class="data-year">2026</div><div class="data-title">Robert Bigley Scholarship<div class="data-sub"><a href="https://osacapps.hecc.oregon.gov/ScholarshipList.aspx">Office of Student Access and Completion (OSAC)</a></div></div></div>
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title">Student Travel Award<div class="data-sub"><a href="https://pacificnwvascular.org/">Pacific Northwest Vascular Society</a></div></div></div>
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title">Looking to the Future Scholar<div class="data-sub"><a href="https://www.sts.org/">Society of Thoracic Surgeons</a></div></div></div>
+      <div class="data-row"><div class="data-year">2022</div><div class="data-title">Vascular Annual Meeting Travel Award<div class="data-sub"><a href="https://vascular.org/">Society for Vascular Surgery</a></div></div></div>
+      <div class="data-row"><div class="data-year">2021</div><div class="data-title">Walter de Groot Scholar<div class="data-sub"><a href="https://www.myavls.org/">American Vein and Lymphatic Society</a></div></div></div>
+      <div class="data-row"><div class="data-year">2017</div><div class="data-title">Wallace H. Coulter Award for Outstanding Undergraduate Research<div class="data-sub"><a href="https://www.ccny.cuny.edu/">City College of New York</a>, Biomedical Engineering</div></div></div>
+      <div class="data-row"><div class="data-year">2014 to 2017</div><div class="data-title">Member, <a href="https://www.tbp.org/home.cfm">Tau Beta Pi</a><div class="data-sub">National Engineering Honor Society</div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2017</div><div class="data-title">Dean's List<div class="data-sub"><a href="https://macaulay.cuny.edu">Macaulay Honors College</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- 6 EXPERIENCE -->
+  <div class="station line-yellow experience">
+    <div class="station-header"><div class="bullet yellow">W</div><span class="station-title">Work Experience</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2021 to 2022</div><div class="data-title">Platform and Portfolio Company Support<div class="data-sub"><a href="https://www.groovecap.com/">Groove Capital</a>, Minneapolis, Minnesota</div></div></div>
+      <div class="data-row"><div class="data-year">2018</div><div class="data-title">Project Manager, Pathology Applications<div class="data-sub"><a href="https://www.epic.com/software/?searchText=beaker">Epic Systems</a>, Verona, Wisconsin</div></div></div>
+      <div class="data-row"><div class="data-year">2014 to 2018</div><div class="data-title">Research Assistant<div class="data-sub">Wallace H. Coulter Laboratory for Cardiovascular Dynamics and Biomolecular Transport, <a href="https://www.ccny.cuny.edu/">City College of New York</a></div></div></div>
+      <div class="data-row"><div class="data-year">2014 to 2015</div><div class="data-title">Head Teaching Assistant, Chemistry<div class="data-sub"><a href="https://www.ccny.cuny.edu/">City College of New York</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- 7 COMMUNITY & SERVICE -->
+  <div class="station line-gray community">
+    <div class="station-header"><div class="bullet gray">L</div><span class="station-title">Leadership &amp; Service</span></div>
+    <div class="station-content">
+      <div class="data-row"><div class="data-year">2018 to 2022</div><div class="data-title">Volunteer<div class="data-sub"><a href="https://www.tprojects.org/">Transition Projects</a>, Portland, Oregon</div></div></div>
+      <div class="data-row"><div class="data-year">2018 to 2021</div><div class="data-title">Director, Board of Trustees<div class="data-sub"><a href="https://www.marquamhillcoop.org/">Phi Beta Pi: Marquam Hill Cooperative</a>, 501(c)(3), Portland, Oregon</div></div></div>
+      <div class="data-row"><div class="data-year">2016 to 2018</div><div class="data-title">Co-founder<div class="data-sub">Gol: Water Filtration Solutions for Developing Areas, New York</div></div></div>
+      <div class="data-row"><div class="data-year">2016 to 2017</div><div class="data-title">Emergency Room Volunteer<div class="data-sub"><a href="https://www.nyp.org/brooklyn">NewYork-Presbyterian Brooklyn Methodist Hospital</a>, Brooklyn, New York</div></div></div>
+      <div class="data-row"><div class="data-year">2015 to 2017</div><div class="data-title">Member, The College Group<div class="data-sub"><a href="https://www.metmuseum.org/">The Metropolitan Museum of Art</a>, New York</div></div></div>
+      <div class="data-row"><div class="data-year">2015</div><div class="data-title">Educational Testing Consultant<div class="data-sub">College entrance exam instruction. <a href="https://grandsettlement.org/">The Grand Street Settlement</a>, 501(c)(3), New York</div></div></div>
+      <div class="data-row"><div class="data-year">2013 to 2015</div><div class="data-title">Volunteer<div class="data-sub"><a href="https://www.worldsciencefestival.com/">World Science Festival</a>, New York</div></div></div>
+    </div>
+  </div>
+
+  <!-- 8 SIDE PROJECTS (Dev) -->
+  <div class="station line-orange side">
+    <div class="station-header"><div class="bullet orange">D</div><span class="station-title">Dev</span></div>
+    <div class="station-content">
+      <div class="build-item">
+        <div class="build-tag">Anki Add-on</div>
+        <strong><a href="https://ankiweb.net/shared/info/897423548">microbatch</a></strong><br>
+        <span>Ten cards at a time, so a long backlog finally has a finish line.</span>
+      </div>
+      <div class="build-item">
+        <div class="build-tag">Anki Add-on</div>
+        <strong><a href="https://ankiweb.net/shared/info/1985468740">Passive Reviewer</a></strong><br>
+        <span>A fifth grading button: reschedule a card and move on.</span>
+      </div>
+      <div class="build-item">
+        <div class="build-tag">Webpage</div>
+        <strong><a href="https://cortriatriatum.github.io/lifeinweeks/#y=1990&le=73&s=avg&u=w&h=0&l=en">Life in Weeks Calendar</a></strong><br>
+        <span>Visualize your life in weeks lived.</span>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- Contact: posts to a Formspree endpoint that forwards privately. No email address appears anywhere in this page. -->
+<dialog class="contact" id="contactDlg" aria-labelledby="contactTitle">
+  <div class="station-header"><div style="display:flex;align-items:center;gap:8px;"><div class="bullet orange">✉</div><span class="station-title" id="contactTitle">Contact Rick</span></div>
+    <button type="button" class="close" id="contactClose" aria-label="Close">✕</button></div>
+  <form id="contactForm" method="POST" novalidate>
+    <label>Name<input name="name" autocomplete="name" required maxlength="120"></label>
+    <label>Your email<input name="email" type="email" autocomplete="email" required maxlength="200"></label>
+    <label>Message<textarea name="message" required maxlength="5000"></textarea></label>
+    <div class="hp" aria-hidden="true"><label>Leave this empty<input name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
+    <input type="hidden" name="_subject" value="cortriatriatum.github.io/me: new message">
+    <div class="row"><button class="send" type="submit">Send</button><span class="status" id="contactStatus" role="status"></span></div>
+    <div class="fine">Delivered privately. I'll reply from my own address.</div>
+  </form>
+</dialog>
+
+<script>
+(function(){
+  var CITY = 'Portland', LAT = 45.5152, LON = -122.6784;
+  var msgEl = document.getElementById('sbMsg');
+  var timeEl = document.getElementById('sbTime');
+  var dotEl  = document.getElementById('sbDot');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var HOLIDAYS = {
+    '01-01': { line: 'Happy New Year. Fresh timetable, same destination.' },
+    '02-14': { line: "Valentine's Day. The heart is, after all, the home line." },
+    '03-14': { line: 'Pi Day. 3.14 trains arriving shortly.' },
+    '06-19': { line: 'Juneteenth. A day worth observing.' },
+    '06-20': { line: 'Summer solstice. Longest day, full timetable.' },
+    '06-21': { line: 'Summer solstice. Longest day, full timetable.' },
+    '07-04': { line: 'Independence Day. Catch the fireworks after the last express.', advisory: true },
+    '10-31': { line: 'Halloween. The express is running, allegedly.' },
+    '11-11': { line: "Veterans Day. With thanks." },
+    '12-21': { line: 'Winter solstice. Shortest day, the lab stays lit.' },
+    '12-25': { line: 'Merry Christmas. Holiday service in effect.' },
+    '12-31': { line: "New Year's Eve. Last train of the year, all aboard." }
+  };
+
+  var EVERGREEN = [
+    'Good service on all lines.',
+    'Mind the gap. Specifically the developmental baseline gap for Coarctation of the aorta.',
+    'No delays. Only unanswered questions.',
+    'Connecting engineering and medicine.'
+  ];
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function mmdd(d){ return pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+  function clock(){
+    try {
+      var fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit' });
+      timeEl.textContent = fmt.format(new Date()) + ' Portland';
+    } catch (e) {
+      var d = new Date(), h = d.getHours(), m = d.getMinutes();
+      var ap = h >= 12 ? 'PM' : 'AM', hh = h % 12; if (hh === 0) hh = 12;
+      timeEl.textContent = hh + ':' + pad(m) + ' ' + ap;
+    }
+  }
+
+  function weatherLine(code, temp){
+    var t = Math.round(temp);
+    var c = code, adv = false, phrase;
+    if (c === 0)                         phrase = 'Clear skies over ' + CITY + ', ' + t + '°. Good service on all lines.';
+    else if (c <= 3)                     phrase = 'Overcast in ' + CITY + ', ' + t + '°. Trains on schedule.';
+    else if (c === 45 || c === 48)     { phrase = 'Fog in ' + CITY + ', ' + t + '°. Mind your step.'; adv = true; }
+    else if (c >= 51 && c <= 67)       { phrase = 'Rain in ' + CITY + ', ' + t + '°. Running on time, bring a coat.'; }
+    else if (c >= 71 && c <= 77)       { phrase = 'Snow in ' + CITY + ', ' + t + '°. Expect a slower ride.'; adv = true; }
+    else if (c >= 80 && c <= 82)       { phrase = 'Showers in ' + CITY + ', ' + t + '°. Trains undeterred.'; }
+    else if (c === 85 || c === 86)     { phrase = 'Snow showers in ' + CITY + ', ' + t + '°. Slower ride ahead.'; adv = true; }
+    else if (c >= 95)                  { phrase = 'Thunderstorms in ' + CITY + ', ' + t + '°. Trains delayed, science isn\'t.'; adv = true; }
+    else                                 phrase = CITY + ', ' + t + '°. Good service on all lines.';
+    return { line: phrase, advisory: adv, code: c };
+  }
+
+  var messages = EVERGREEN.slice();
+  var idx = 0, weatherMode = 'none', daylightLine = null;
+
+  function fmtISOtime(s){
+    var t = (s || '').split('T')[1]; if (!t) return '';
+    var p = t.split(':'), h = parseInt(p[0], 10), m = p[1];
+    var ap = h >= 12 ? 'PM' : 'AM', hh = h % 12; if (hh === 0) hh = 12;
+    return hh + ':' + m + ' ' + ap;
+  }
+
+  function rebuildMessages(weather){
+    var today = HOLIDAYS[mmdd(new Date())];
+    var list = [];
+    if (weather)      list.push(weather.line);
+    if (daylightLine) list.push(daylightLine);
+    if (today)        list.push(today.line);
+    list = list.concat(EVERGREEN);
+    messages = list;
+    idx = 0;
+    dotEl.className = 'sb-dot live' + ((today && today.advisory) || (weather && weather.advisory) ? ' advisory' : '');
+    showMessage(messages[0]);
+  }
+
+  function showMessage(text){
+    if (reduce){ msgEl.innerHTML = text; return; }
+    msgEl.classList.add('swap');
+    setTimeout(function(){ msgEl.innerHTML = text; msgEl.classList.remove('swap'); }, 350);
+  }
+  function cycle(){ if (messages.length < 2) return; idx = (idx + 1) % messages.length; showMessage(messages[idx]); }
+
+  function loadWeather(){
+    var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
+              '&current=temperature_2m,weather_code&daily=sunrise,sunset&temperature_unit=fahrenheit&timezone=auto';
+    fetch(url).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+      if (!j || !j.current) { rebuildMessages(null); return; }
+      if (j.daily && j.daily.sunrise && j.daily.sunset) {
+        daylightLine = 'Daylight in ' + CITY + ': ' + fmtISOtime(j.daily.sunrise[0]) + ' to ' + fmtISOtime(j.daily.sunset[0]) + '.';
+      }
+      var w = weatherLine(j.current.weather_code, j.current.temperature_2m);
+      rebuildMessages(w);
+      setAmbient(w.code);
+    }).catch(function(){ rebuildMessages(null); });
+  }
+
+  var canvas = document.getElementById('ambient'), ctx = canvas.getContext('2d');
+  var W, H, parts = [], raf;
+  function size(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+  function setAmbient(code){
+    if (reduce) return;
+    var mode = 'none';
+    if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) mode = 'rain';
+    else if ((code >= 71 && code <= 77) || code === 85 || code === 86) mode = 'snow';
+    else if (code === 45 || code === 48) mode = 'fog';
+    weatherMode = mode;
+    seed();
+  }
+  function seed(){
+    parts = [];
+    if (weatherMode === 'none'){ ctx && ctx.clearRect(0,0,W,H); return; }
+    var n = weatherMode === 'fog' ? 9 : (weatherMode === 'snow' ? 60 : 90);
+    for (var i=0;i<n;i++){
+      if (weatherMode === 'rain') parts.push({ x:Math.random()*W, y:Math.random()*H, l:8+Math.random()*12, v:5+Math.random()*5 });
+      else if (weatherMode === 'snow') parts.push({ x:Math.random()*W, y:Math.random()*H, r:1+Math.random()*2, v:0.4+Math.random()*0.8, s:Math.random()*6 });
+      else parts.push({ x:Math.random()*W, y:Math.random()*H, r:60+Math.random()*120, v:0.2+Math.random()*0.3, a:0.03+Math.random()*0.03 });
+    }
+    if (!raf) loop();
+  }
+  function loop(){
+    raf = requestAnimationFrame(loop);
+    if (!ctx) return;
+    ctx.clearRect(0,0,W,H);
+    if (weatherMode === 'rain'){
+      ctx.strokeStyle = 'rgba(40,70,120,0.18)'; ctx.lineWidth = 1;
+      parts.forEach(function(p){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-1.5,p.y+p.l); ctx.stroke();
+        p.y += p.v; p.x -= 0.4; if (p.y > H){ p.y = -p.l; p.x = Math.random()*W; } });
+    } else if (weatherMode === 'snow'){
+      ctx.fillStyle = 'rgba(120,140,180,0.30)';
+      parts.forEach(function(p){ p.s += 0.02; ctx.beginPath(); ctx.arc(p.x + Math.sin(p.s)*4, p.y, p.r, 0, 7); ctx.fill();
+        p.y += p.v; if (p.y > H){ p.y = -4; p.x = Math.random()*W; } });
+    } else if (weatherMode === 'fog'){
+      parts.forEach(function(p){ var g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+        g.addColorStop(0,'rgba(140,140,160,'+p.a+')'); g.addColorStop(1,'rgba(140,140,160,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill();
+        p.x += p.v; if (p.x - p.r > W){ p.x = -p.r; p.y = Math.random()*H; } });
+    }
+  }
+
+  function midnightRefresh(){
+    var now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 5);
+    setTimeout(function(){ loadWeather(); midnightRefresh(); }, next - now);
+  }
+
+  size(); addEventListener('resize', function(){ size(); seed(); });
+  clock(); setInterval(clock, 30000);
+  loadWeather();
+  setInterval(loadWeather, 30*60*1000);
+  if (!reduce) setInterval(cycle, 7000);
+  midnightRefresh();
+})();
+</script>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var TAGS = {
+    identity:   ['now boarding', 'all aboard', 'this way in'],
+    focus:      ['express service', 'limited stops', 'next stop: a cause'],
+    side:       ['nights & weekends', 'off-peak builds', 'shuttle service'],
+    education:  ['uptown', '137 St · City College', 'transfers here'],
+    experience: ['via the express', 'all transfers'],
+    community:  ['local service', 'every stop', 'community board'],
+    funding:    ['fare paid', 'swipe accepted'],
+    honors:     ['priority seating', 'express awards'],
+    pubs:       ['free reading', 'take one', 'peer reviewed']
+  };
+  var tagEls = [];
+  document.querySelectorAll('.station').forEach(function(st){
+    var key = Object.keys(TAGS).filter(function(k){ return st.classList.contains(k); })[0];
+    if (!key) return;
+    var span = document.createElement('span');
+    span.className = 'station-tag';
+    span.textContent = TAGS[key][0];
+    span._tags = TAGS[key]; span._i = 0;
+    var hdr = st.querySelector('.station-header'); if (hdr) hdr.appendChild(span);
+    tagEls.push(span);
+  });
+  if (!reduce && tagEls.length){
+    var turn = 0;
+    setInterval(function(){
+      var el = tagEls[turn % tagEls.length]; turn++;
+      el._i = (el._i + 1) % el._tags.length;
+      el.classList.add('swap');
+      setTimeout(function(){ el.textContent = el._tags[el._i]; el.classList.remove('swap'); }, 400);
+    }, 3200);
+  }
+
+  var CITES = {
+    'rs-10021035': 'Mathews R, Ditmore R, Krajbich V, Hinds MT, Woltjer RL, Muralidaran A. Heterochronic expression of TFAP2β in coarctation of the aorta. Res Sq [Preprint]. 2026 Jun 30:rs.3.rs-10021035. doi:10.21203/rs.3.rs-10021035/v1',
+    'ajpheart.00741': 'Mathews R, Hinds MT, Woltjer RL, Muralidaran A. Territory mapping the ductal-aortic junction throughout gestation is a critical and missing baseline for coarctation of the aorta. Am J Physiol Heart Circ Physiol. 2026;330(3):H869-H873. doi:10.1152/ajpheart.00741.2025',
+    '38099327': 'Mathews R, Setthavongsack N, Le-Cook A, Kaempf A, Loftis JM, Woltjer RL, Lorentz CU, Revenko A, Hinds MT, Nguyen KP. Role of platelet count in a murine stasis model of deep vein thrombosis. Platelets. 2024;35(1):2290916.',
+    '38359323': 'Mathews R, Hinds MT, Nguyen KP. Venous thromboembolism: diagnostic advances and unaddressed challenges in management. Curr Opin Hematol. 2024;31(3):122-129.',
+    '39393311': 'Mathews R, Pang J, Muralidaran SA, King CGX, McCarty OJT, Hinds MT. AMP-dependent protein kinase regulates endothelial heparan sulfate expression in response to an inflammatory stimulus under arterial shear stress. Biochem Biophys Res Commun. 2024;735:150743.',
+    '34059731': 'Bartosch AMW, Mathews R, Mahmoud MM, Cancel LM, Haq ZS, Tarbell JM. Heparan sulfate proteoglycan glypican-1 and PECAM-1 cooperate in shear-induced endothelial nitric oxide production. Sci Rep. 2021;11(1):11386.',
+    '32647868': 'Mahmoud M, Mayer M, Cancel LM, Bartosch AM, Mathews R, Tarbell JM. The glycocalyx core protein glypican-1 protects vessel wall endothelial cells from stiffness-mediated dysfunction and disease. Cardiovasc Res. 2021;117(6):1592-1605.',
+    '28700908': 'Bartosch AMW, Mathews R, Tarbell JM. Endothelial glycocalyx-mediated nitric oxide production in response to selective AFM pulling. Biophys J. 2017;113(1):101-108.',
+    '2405874': 'De Sa H, Deloughery T, Kaempf A, et al. Thromboprophylaxis with intermediate dose enoxaparin during asparaginase containing induction for young adults with acute lymphoblastic leukemia. Leuk Lymphoma. 2025;66(1):34-43. doi:10.1080/10428194.2024.2405874',
+    'ejh.14146': 'Kartika T, Mathews R, Migneco G, et al. Comparison of bleeding and thrombotic outcomes in veno-venous extracorporeal membrane oxygenation: heparin versus bivalirudin. Eur J Haematol. 2024;112(4):566-576. doi:10.1111/ejh.14146',
+    'ejh.14061': 'LaVasseur C, Mathews R, Wang JSH, et al. Estrogen-based hormonal therapy and the risk of thrombosis in COVID-19 patients. Eur J Haematol. 2023;111(5):678-686. doi:10.1111/ejh.14061',
+    'ejh.13963': 'Oyogoa E, Mathews R, Olson S, DeLoughery T, Shatzel JJ, Martens KL. Clinical outcomes of patients referred for asymptomatic neutropenia: a focus on racial disparities in hematology. Eur J Haematol. 2023;111(1):41-46. doi:10.1111/ejh.13963',
+    'muralidaran-atrial-appendage': 'Mathews R, Shen I, Muralidaran A. Atrial appendage tissue as autologous vascular conduit in pediatric cardiac surgery. ACS Case Rev Surg. 2022;3(7):69-72.',
+    '1.4051765': 'Fallon ME, Mathews R, Hinds MT. In vitro flow chamber design for the study of endothelial cell (patho)physiology. J Biomech Eng. 2022;144(2):020801. doi:10.1115/1.4051765',
+    'ssrn.4395597': 'Kartika T, Mathews R, Migneco G, et al. Real-world comparison of bleeding and thrombotic outcomes in V-V ECMO: heparin versus bivalirudin. SSRN [Preprint]. 2023. doi:10.2139/ssrn.4395597',
+    '90610-4.00013-6': 'Palmer M, Mathews R, Moneta GL, Nguyen KP. Assessment tools and wound documentation for patients with chronic venous insufficiency. In: Venous Ulcers. Elsevier; 2023:179-197. doi:10.1016/B978-0-323-90610-4.00013-6',
+    'suppl_1.4148019': 'Mathews R, McCarty O, Hinds M. Shear stress affects human aortic endothelial heparan sulfate expression response to inflammatory stimulus [abstract]. Circulation. 2024;150(Suppl 1):A4148019. doi:10.1161/circ.150.suppl_1.4148019',
+    'blood-2023-191092': 'Wang JSH, Lauthner A, Vu HH, et al. Multimodality quantification of thrombus deposition in extracorporeal membrane oxygenation (ECMO); correlating oxygenator computed tomography imaging, electron microscopy and histology to clinical outcomes [abstract]. Blood. 2023;142(Suppl 1):1285. doi:10.1182/blood-2023-191092',
+    'blood-2022-170582': 'LaVasseur CM, Mathews R, McMurry HS, et al. Use of hormonal therapy increases the risk of venous thrombosis in COVID-19 patients; results of 1071 patient cohort [abstract]. Blood. 2022;140(Suppl 1):8497-8498. doi:10.1182/blood-2022-170582',
+    'bpj.2016.11.1685': 'Weber AMT, Mathews R, Haq Z, Cancel LM, Tarbell JM. The short term response of PECAM-1 to mechanical loading: cyclooxygenase-2 and nitric oxide production with AFM pulling and shear stress [abstract]. Biophys J. 2017;112(3):311a. doi:10.1016/j.bpj.2016.11.1685'
+  };
+
+  var toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = '<span class="tdot"></span><span id="toastMsg"></span>';
+  document.body.appendChild(toast);
+  var toastMsg = toast.querySelector('#toastMsg'), toastTimer;
+  function showToast(t){
+    toastMsg.textContent = t; toast.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 1900);
+  }
+  function fallbackCopy(text, ok){
+    var ta = document.createElement('textarea'); ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); ok(); } catch (e) { showToast('Copy failed — select manually'); }
+    document.body.removeChild(ta);
+  }
+  function copyText(text, ok){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(ok, function(){ fallbackCopy(text, ok); });
+    } else { fallbackCopy(text, ok); }
+  }
+
+  var pubCard = document.querySelector('.station.pubs');
+  if (pubCard){
+    pubCard.querySelectorAll('.data-row').forEach(function(row){
+      var a = row.querySelector('a[href]'); if (!a) return;
+      var href = a.getAttribute('href');
+      var key = Object.keys(CITES).filter(function(k){ return href.indexOf(k) !== -1; })[0];
+      if (!key) return;
+      var btn = document.createElement('button');
+      btn.className = 'cite-btn'; btn.type = 'button'; btn.textContent = 'Cite';
+      btn.addEventListener('click', function(){ copyText(CITES[key], function(){ showToast('Citation copied'); }); });
+      (row.querySelector('.data-title') || row).appendChild(btn);
+    });
+  }
+})();
+</script>
+<script>
+(function(){
+  var root = document.documentElement, btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  function systemDark(){ try { return matchMedia('(prefers-color-scheme: dark)').matches; } catch(e){ return false; } }
+  function current(){ return root.getAttribute('data-theme') || (systemDark() ? 'dark' : 'light'); }
+  function sync(){
+    var dark = current() === 'dark';
+    btn.textContent = dark ? '\u2600' : '\u263E';               /* sun when dark, moon when light */
+    btn.setAttribute('aria-pressed', String(dark));
+    btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  }
+  btn.addEventListener('click', function(){
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch(e){}
+    sync();
+  });
+  try {
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){
+      if (!root.getAttribute('data-theme')) sync();   /* follow system only if user hasn't chosen */
+    });
+  } catch(e){}
+  sync();
+})();
+</script>
+<script>
+/* Bio portrait rotation: crossfade every 6 s, click/tap to advance, pause on hover and when tab hidden.
+   Images 2-3 are fetched only after page load so they never compete with first paint. */
+(function(){
+  var box = document.getElementById('avatar'); if (!box) return;
+  var imgs = box.querySelectorAll('img'), i = 0, timer = null, hover = false;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function hydrate(){ imgs.forEach(function(im){ if (im.dataset.src){ im.src = im.dataset.src; im.removeAttribute('data-src'); } }); }
+  function show(n){
+    imgs[i].classList.remove('on'); imgs[i].alt = '';
+    i = (n + imgs.length) % imgs.length;
+    imgs[i].classList.add('on'); imgs[i].alt = 'Rick Mathews';
+  }
+  function start(){ stop(); if (!reduce && !hover && !document.hidden) timer = setInterval(function(){ show(i + 1); }, 6000); }
+  function stop(){ clearInterval(timer); timer = null; }
+  box.addEventListener('click', function(){ hydrate(); show(i + 1); start(); });
+  box.addEventListener('mouseenter', function(){ hover = true; stop(); });
+  box.addEventListener('mouseleave', function(){ hover = false; start(); });
+  document.addEventListener('visibilitychange', start);
+  if (document.readyState === 'complete') { hydrate(); start(); }
+  else addEventListener('load', function(){ hydrate(); start(); });
+})();
+</script>
+<script>
+/* ===== Contact form =====
+   SETUP: paste your Formspree form ID below (the part after /f/ in https://formspree.io/f/xxxxxxx).
+   Until it is set, the Email button stays hidden, so the page never shows a broken button.
+   Spam layers: (1) no address in source to scrape, (2) _gotcha honeypot (Formspree drops these silently),
+   (3) time trap: sends faster than 3 s after opening are discarded client-side, (4) Formspree's server-side
+   spam filter, (5) "Restrict to domain" in Formspree settings so the ID only works from this site. */
+(function(){
+  var FORMSPREE_ID = 'mwlllezg';
+  var btn = document.getElementById('contactBtn'), dlg = document.getElementById('contactDlg');
+  if (!FORMSPREE_ID || !btn || !dlg || typeof dlg.showModal !== 'function') return;
+  var form = document.getElementById('contactForm'), status = document.getElementById('contactStatus');
+  var send = form.querySelector('.send'), endpoint = 'https://formspree.io/f/' + FORMSPREE_ID, openedAt = 0;
+  form.action = endpoint;
+  btn.hidden = false;
+  btn.addEventListener('click', function(){ status.textContent = ''; openedAt = Date.now(); dlg.showModal(); form.elements.name.focus(); });
+  document.getElementById('contactClose').addEventListener('click', function(){ dlg.close(); });
+  dlg.addEventListener('click', function(e){ if (e.target === dlg) dlg.close(); });   /* click backdrop to close */
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (!form.checkValidity()) { status.textContent = 'Please fill in all three fields with a valid email.'; return; }
+    if (form.elements._gotcha.value || Date.now() - openedAt < 3000) { status.textContent = 'Sent. Thank you.'; form.reset(); return; }
+    send.disabled = true; status.textContent = 'Sending…';
+    fetch(endpoint, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' } })
+      .then(function(r){
+        if (r.ok) { status.textContent = 'Sent. Thank you, I will reply soon.'; form.reset(); setTimeout(function(){ dlg.close(); }, 1800); }
+        else { form.submit(); }   /* e.g. CAPTCHA required: fall back to Formspree's own page */
+      })
+      .catch(function(){ form.submit(); })
+      .then(function(){ send.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>
